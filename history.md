@@ -1,0 +1,5 @@
+[I](http://github.com/vmbrasseur) started writing this documentation back in 2011 during my brief tenure at [Internet Archive](http://archive.org). The project on which I was working was going to need the IAS3 API and, to be frank, I found the [existing documentation](http://archive.org/help/abouts3.txt) lacking.
+
+After I left the Archive this documentation collected dust in my [Dropbox](https://db.tt/Lwfj4Gk) for a couple of years. Then, when I started to archive [San Francisco Perl Mongers](https://archive.org/details/sfperlmongers) videos on Internet Archive I frequently found myself referring to this doc, particularly the discussion on metadata fields.
+
+While I now use Jake Johnson's [ia-wrapper](https://github.com/jjjake/ia-wrapper) Python script for my uploading, this documentation may still be very useful to others who'd like to programmatically maintain items on Internet Archive. Therefore I've given this doc a quick clean-up and have released it on Github for ease of reference and collaboration.
