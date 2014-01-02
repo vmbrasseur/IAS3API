@@ -12,7 +12,7 @@ In IAS3, identifiers are defined implicitly in the target URL. For example:
     --header "Authorization: LOW $accesskey:$secret" \
     --header "x-archive-meta-collection:test_collection" \
     --upload-file /Users/archive/Desktop/The_Open_Source_Way_03.pdf \
-    http://s3.us.archive.org/**vmb_tosw_trial_upload_03**/The_Open_Source_Way_03.pdf
+    http://s3.us.archive.org/vmb_tosw_trial_upload_03/The_Open_Source_Way_03.pdf
 
 The identifier in this command is `vmb_tosw_trial_upload_03`. The item may be viewed at its _details_ page. The details page for any item is simply `http://archive.org/details/` followed by the identifier. The details page for this example is:
 
