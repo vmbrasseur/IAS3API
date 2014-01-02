@@ -9,6 +9,8 @@ This document is a work in progress. Please use it in conjunction with the [offi
 * [Introduction](./introduction.md)
 * [Quick Start](./quickstart.md)
 * [System Requirements](./systemrequirements.md)
+* [Compatibility with Amazon S3](./compatibility.md)
+* [Passing Authorization Credentials to IAS3](./authcredentials.md)
 * [Identifiers](./identifiers.md)
 * [Anatomy of an IAS3 Request](./requestanatomy.md)
 * [Headers](./headers.md)
