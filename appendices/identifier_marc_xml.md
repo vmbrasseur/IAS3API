@@ -2,6 +2,8 @@
 
 The `japanesefairytal00ozak_marc.xml` file for [Japanese Fairy Tales](http://www.archive.org/details/japanesefairytal00ozak).
 
+You can view this file [on Internet Archive](https://ia600308.us.archive.org/27/items/japanesefairytal00ozak/japanesefairytal00ozak_marc.xml).
+
 -----
 
     <record xmlns="http://www.loc.gov/MARC21/slim">
