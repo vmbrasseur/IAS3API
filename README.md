@@ -15,6 +15,7 @@ This document is a work in progress. Please use it in conjunction with the [offi
 * [Anatomy of an IAS3 Request](./requestanatomy.md)
 * [Headers](./headers.md)
 * [Metadata](./metadata.md)
+* [Setting Metadata Values via Files](./metadatafiles.md)
 * [Special Files](./specialfiles.md)
 * [A note on downloading](./downloading.md)
 * [Troubleshooting](./troubleshooting.md)
