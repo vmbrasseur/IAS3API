@@ -28,5 +28,5 @@ Because the initial writing and research for this documentation occurred in 2011
     * [IAS3 HTTP Return Codes](./appendices/returncodes.md)
     * [IAS3 Error Messages](./appendices/errormessages.md)
     * [Default metadata values](./appendices/defaultmetadatavalues.md)
-    * [Example IDENTIFIER_marc.xml file](./appendices/identifier_marc.xml)
-    * [Example IDENTIFIER_meta.mrc file](./appendices/identifier_meta.mrc)
+    * [Example IDENTIFIER_marc.xml file](./appendices/identifier_marc_xml.md)
+    * [Example IDENTIFIER_meta.mrc file](./appendices/identifier_meta_mrc.md)
