@@ -10,14 +10,14 @@ This file must contain metadata in well-formed [MARCXML](http://www.loc.gov/stan
 
 It must be named appropriately or it will not be recognized. The proper naming scheme is the items [identifier](./identifiers.md) followed by `_marc.xml`.
 
-An [example IDENTIFIER_marc.xml file](./appendices/identifier_marc.xml) can be found in the Appendix.
+An [example IDENTIFIER_marc.xml file](./appendices/identifier_marc_xml.md) can be found in the Appendix.
 
 ### IDENTIFIER_meta.mrc
 
 This file must contain metadata in binary MARC format according to the [ISO 2709](http://www.iso.org/iso/iso_catalogue/catalogue_tc/catalogue_detail.htm?csnumber=41319) standard. 
 It must be named appropriately or it will not be recognized. The proper naming scheme is the items [identifier](./identifiers.md) followed by `_marc.xml`.
 
-An [example IDENTIFIER_meta.mrc file](./appendices/identifier_meta.mrc) can be found in the Appendix.
+An [example IDENTIFIER_meta.mrc file](./appendices/identifier_meta_mrc.md) can be found in the Appendix.
 
 ### How these metadata files are processed
 
