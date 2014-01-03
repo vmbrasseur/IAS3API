@@ -1,4 +1,4 @@
-## Other Files in an Item
+## Special Files in the Item
 
 Each Internet Archive item is comprised of several files. Many of these files are automatically generated and **should not** be either removed or modified.
 
