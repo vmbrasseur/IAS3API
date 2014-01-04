@@ -29,3 +29,4 @@ This document is a work in progress. Please use it in conjunction with the [offi
     * [Default metadata values](./appendices/defaultmetadatavalues.md)
     * [Example IDENTIFIER_marc.xml file](./appendices/identifier_marc_xml.md)
     * [Example IDENTIFIER_meta.mrc file](./appendices/identifier_meta_mrc.md)
+    * [Other Internet Archive tools](./appendices/othertools.md)
