@@ -1,0 +1,1988 @@
+<html>
+	<head>
+		<title>Internet Archive's S3-like Server API</title>
+		<style>
+			<!--
+			body {
+				font-family:Helvetica, Arial, sans-serif;
+			}
+			h2 {
+				border-top: 1px solid black;
+				padding-top: 5px;
+			}
+			h3 {
+			}
+			h4 {
+			}
+			dt {
+				margin-bottom:5px;
+			}
+			#toc {
+				/* Table of Contents */
+				background-color: #e0e0f0;
+				padding:10px;
+				margin:5px 50px 20px 30px;
+				font-size:small;
+			}
+			.code {
+				font-family:monospace;
+			}
+			.codeblock {
+				padding:10px;
+				margin:5px 50px 20px 30px;
+				display:block;
+				background-color:#e0e0f0;
+			}
+			div.level1 {
+				/* Sections covered by an h1 header */
+			  /* Probably won't be used */
+			}
+			div.level2 {
+				/* Sections covered by an h2 header */
+			}
+			div.level3 {
+				/* Sections covered by an h3 header */
+				margin-left:2%;
+				margin-right:2%;
+			}
+			div.level4 {
+				/* Sections covered by an h4 header */
+				margin-left:4%;
+				margin-right:4%;
+			}
+			.foo {
+				/* My way of calling out TODO items */
+				color:#66CD00;
+				font-weight:bold;
+				font-style:italic;
+			}
+			-->
+		</style>
+	</head>
+	<body>
+	<p class="foo">
+	GENERAL TODO:
+	</p>
+	<ul class="foo">
+		<li>The examples are all over the place. They need to be more consistent.</li>
+		<li>Check that x-archive-queue-derive header. I just skimmed it and it doesn't seem right.</li>
+		<li>Investigate getting an "ias3support@archive.org" address for support requests</li>
+		<li>Some of the standard metadata fields are repeatable, some are not. State this in the descriptions.</li>
+		<li>Excellent Hank idea: Quick Start (TL;DR) section to avoid all the gory details</li>
+		<li>Dang, but this damn thing is hard to read. Will that get better when it gets converted to the PHP wrapper? I have my doubts. May need a some quick George love to give tips for better readability.</li>
+		<li>All the other 'foo' (read: green) bits below</li>
+	</ul>
+		<h1>Internet Archive's S3-like Server API</h1>
+		<p>
+		Last Updated: $Date: 2011-10-06 +0000 (Thu, 06 Oct 2011) $
+		</p>
+
+		<div id="toc">
+			<ul>
+				<li><a href="#notabene">NOTA BENE</a></li>
+				<li><a href="#introduction">Introduction</a></li>
+				<li><a href="#iaswhat">What the IAS3 API Allows You To Do</a></li>
+				<li><a href="#ias3vss3">How IAS3 Differs From Amazon S3</a></li>
+				<li><a href="#systemrequirements">System Requirements</a></li>
+				<li><a href="#usings3clients">Using S3 Clients to Access IAS3</a></li>
+				<li><a href="#passingcredentials">Passing Authorization Credentials to IAS3</a></li>
+				<li><a href="#amazons3headers">Commonly Used Amazon S3 Headers</a>
+					<ul>
+						<li><a href="#amzautomakebucket">x-amz-auto-make-bucket</a></li>
+					</ul>
+				</li>
+				<li><a href="#iaspecificheaders">Internet Archive-specific IAS3 Headers</a>
+					<ul>
+						<li><a href="#cascadedelete">x-archive-cascade-delete</a></li>
+						<li><a href="#ignorepreexistingbucket">x-archive-ignore-preexisting-bucket</a></li>
+						<li><a href="#keepoldversion">x-archive-keep-old-version</a></li>
+						<li><a href="#meta">x-archive-meta-*</a></li>
+						<li><a href="#queuederive">x-archive-queue-derive</a></li>
+						<li><a href="#sizehint">x-archive-size-hint</a></li>
+					</ul>
+				</li>
+				<li><a href="#ias3identifiers">IAS3 Identifiers</a></li>
+				<li><a href="#metadataheaders">Settings Metadata Values via Headers</a>
+					<ul>
+						<li><a href="#metadatafields">Standard Internet Archive Metadata Fields</a>
+							<ul>
+								<li><a href="#metahidden">hidden</a></li>
+								<li><a href="#metadataidentifier">identifier</a></li>
+								<li><a href="#metatitle">title</a></li>
+								<li><a href="#metacreator">creator</a></li>
+								<li><a href="#metamediatype">mediatype<a/></li>
+								<li><a href="#metacollection">collection</a></li>
+								<li><a href="#metadescription">description</a></li>
+								<li><a href="#metadata">date</a></li>
+								<li><a href="#metasubject">subject</a></li>
+								<li><a href="#metalicenseurl">licenseurl</a></li>
+								<li><a href="#metapick">pick</a></li>
+								<li><a href="#metanoindex">noindex</a></li>
+								<!--<li><a href="#metaneverindex">neverindex</a></li>-->
+								<li><a href="#metapublicdate">publicdate</a></li>
+								<li><a href="#metaaddeddate">addeddate</a></li>
+								<li><a href="#metaadder">adder</a></li>
+								<li><a href="#metauploader">uploader</a></li>
+								<li><a href="#metaupdater">updater</a></li>
+								<li><a href="#metaupdatedate">updatedate</a></li>
+								<li><a href="#metanotes">notes</a></li>
+								<li><a href="#metarights">rights</a></li>
+								<li><a href="#metacontributor">contributor</a></li>
+								<li><a href="#metapublisher">publisher</a></li>
+								<li><a href="#metalanguage">language</a></li>
+								<li><a href="#metacoverage">coverage</a></li>
+								<li><a href="#metacredits">credits</a></li>
+							</ul>
+						</li>
+						<li><a href="#custommetadata">Custom Metadata Fields</a></li>
+						<li><a href="#repeatingmetadata">Repeating Metadata Fields</a></li>
+					</ul>
+				</li>
+				<!--<li><a href="#additionalmetadata">Additional Specialized Metadata Fields</a></li>-->
+				<li><a href="#metadatafiles">Setting Metadata Values via Files</a>
+					<ul>
+						<li><a href="#marcxml">IDENTIFIER_marc.xml</a></li>
+						<li><a href="#metamrc">IDENTIFIER_meta.mrc</a></li>
+						<li><a href="#metadatafileprocessing">How These Metadata Files Are Processed</a></li>
+					</ul>
+				</li>
+				<li><a href="#specialfiles">Special Files</a>
+					<ul>
+						<li><a href="#metaxml">IDENTIFIER_meta.xml</a></li>
+						<!--<li><a href="#dcxml">IDENTIFIER_dc.xml</a></li>-->
+						<li><a href="#filesxml">IDENTIFIER_files.xml</a></li>
+						<li><a href="#rulesconf">IDENTIFIER_rules.conf</a>
+							<ul>
+								<li><a href="#specificformats">Specific File Formats</a></li>
+								<li><a href="#lossyformats">Only 'lossy' File Formats</a></li>
+								<li><a href="#allderivatives">All Derivatives</a></li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li><a href="#troubleshooting">Troubleshooting</a>
+					<ul>
+						<li><a href="#objectlog">Viewing a log of your IAS3 object</a></li>
+						<li><a href="#filenotappearing">My file isn't appearing in the item.</a></li>
+						<li><a href="#testcollection">Is there sandbox I can use for testing IAS3?</a></li>
+						<li><a href="#catalog">What happens to my item/file after uploading?</a></li>
+						<li><a href="#controllingderives">Is there any way to control how files derive?</a></li>
+					</ul>
+				</li>
+				<li><a href="#downloading">Downloading via IAS3</a></li>
+				<li><a href="#codeexamples">Code Examples</a>
+					<ul>
+						<li><a href="#curl">curl</a>
+							<ul>
+								<li><a href="#curltext">Text item (a PDF will be OCR'd)</a></li>
+								<li><a href="#curlmovie">Movie item (Will get video player on details page)</a></li>
+								<li><a href="#curlexistingitem">Uploading a file to an existing item</a></li>
+								<li><a href="#curlnewmetadata">Destroy and respecify the metadata for an item</a></li>
+								<li><a href="#curlmetadata">A Movie example with subject keywords, and creative commons license</a></li>
+							</ul>
+						</li>
+						<li><a href="#perl">Perl</a>
+							<ul>
+								<li><a href="#perluploadmany">An extract of a script for uploading multiple files via IAS3 using LWP</a></li>
+							</ul>
+						</li>
+						<li><a href="#otherlanguages">Other Languages</a></li>
+					</ul>
+				</li>
+				<li><a href="#support">Support</a></li>
+				<li><a href="#appendices">Appendices</a>
+					<ul>
+						<li><a href="#terminology">Terminology</a></li>
+						<li><a href="#itemstructure">Internet Archive's Item Structure (in brief)</a></li>
+						<li><a href="#ias3httpreturncodes">IAS3 HTTP Return Codes</a></li>
+						<li><a href="#errormessages">Error Messages</a></li>
+						<li><a href="#defaultmetadata">Default Metadata Values</a></li>
+						<li><a href="#examplemarcxml">Example IDENTIFIER_marc.xml file</a></li>
+						<li><a href="#examplemrcfile">Example IDENTIFIER_meta.mrc file</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+
+		<div class="level2">
+		<h2><a name="notabene"></a>NOTA BENE</h2>
+		<p style="color:red; font-weight:bold;">
+		This document is very, very much a work in progress. It's so in-progress it's not even a first draft. Please do not assume this document is definitive until it gets committed and pushed live to archive.org (wrapped in appropriate lookfeel, etc.). Until then, feel free to reference this but the official IAS3 documentation can still be found at <a href="http://archive.org/help/abouts3.txt">http://archive.org/help/abouts3.txt</a>.
+		</p>
+
+		<h2><a name="introduction"></a>Introduction</h2>
+		<p>
+		This document covers the technical details of using Internet Archive's S3-like server API, aka "IAS3." The intended audience is a technical user, ideally one who is comfortable in the Linux/UNIX command line environment.
+		</p>
+		<p>
+		IAS3 is an <a href="http://en.wikipedia.org/wiki/Api">API</a> based upon <a href="http://amazonwebservices.com">Amazon's</a> <a href="http://docs.amazonwebservices.com/AmazonS3/latest/dev/">Simple Storage Service (aka S3)</a>. Whereas Amazon's S3 API allows you to store items in the Amazon S3 cloud storage service, the IAS3 API allows you to create items on and upload data to <a href="http://archive.org">Internet Archive</a>.
+		</p>
+		<p>
+		Because of its similarities to Amazon's S3, <strong><em>please familiarize yourself with the <a href="http://docs.amazonwebservices.com/AmazonS3/latest/dev/">Amazon S3</a> documentation before using Internet Archive's IAS3.</em></strong>
+		</p>
+		</div> <!-- level2 -->
+
+		<div class="level2">
+		<h2><a name="ias3what"></a>What the IAS3 API Allows You To Do</h2>
+		<p class="foo">
+		foo: Check with Sam re: the examples marked below; they aren't working as expected. Also: don't like the section title.
+		</p>
+		<p>
+		In Internet Archive terminology, an <a href="#itemdef">item</a> maps directly onto the Amazon S3 concept of a <a href="http://docs.amazonwebservices.com/AmazonS3/latest/dev/Introduction.html">bucket</a>. IAS3 allows you to create items n&eacute;e buckets, populate them with files and maintain the metadata for the item. You can also use IAS3 to control certain elements of file processing behavior. Internet Archive currently does not support file-level metadata.
+		</p>
+		<p>
+		Because Internet Archive items are analogous to Amazon S3 buckets they can be accessed using similar URL addresses. Items are typically accessed on Internet Archive using the IA-specific <span class="code">details/IDENTIFIER</span> format. For instance:
+		</p>
+		<div class="code codeblock">
+			http://www.archive.org/details/Sita_Sings_the_Blues
+		</div>
+		<p>
+		The link above will present the <em>details page</em> for the item on Internet Archive.
+		</p>
+		<p>
+		This same item is also available in an S3-like format of:
+		</p>
+		<div class="code codeblock">
+			http://s3.us.archive.org/Sita_Sings_the_Blues
+		</div>
+		<p>
+		Or:
+		</p>
+		<div class="foo code codeblock">
+			http://Sita_Sings_the_Blues.s3.us.archive.org/
+		</div>
+		<p>
+		These URLs will return XML containing information about the item.
+		</p>
+		<p>
+		Each file contained in an item can similarly be used as an S3-like key in a URL:
+		</p>
+		<div class="foo code codeblock">
+			http://Sita_Sings_the_Blues.s3.us.archive.org/Sita_Sings_the_Blues_small.mp4
+		</div>
+		<p>
+			Performing a <span class="code">PUT</span> on the Internet Archive equivalent to an S3 endpoint will result in the creation of a new item in Internet Archive. Files may be added to the item in the same manner. Both of these operations may be combined in a single <span class="code">PUT</span> command. For example, using curl:
+		</p>
+		<div class="code codeblock">
+		curl --location --header 'x-amz-auto-make-bucket:1' \<br />
+				 --header 'x-archive-meta01-collection:opensource' \<br />
+				 --header 'x-archive-meta-mediatype:texts' \<br />
+				 --header 'x-archive-meta-sponsor:Andrew W. Mellon Foundation' \<br />
+				 --header 'x-archive-meta-language:eng' \<br />
+				 --header "authorization: LOW $accesskey:$secret" \<br />
+				 --upload-file /home/samuel/public_html/intro-to-k.pdf \<br />
+		http://s3.us.archive.org/sam-s3-test-08/demo-intro-to-k.pdf
+			</div>
+		</div><!-- level2 -->
+	
+		<div class="level2">
+		<h2><a name="ias3vss3"></a>How IAS3 Differs From Amazon S3</h2>
+		<p>
+		IAS3 differs from Amazon's S3 API in several significant ways:
+		</p>
+		<ul>
+			<li>IAS3 does not allow DELETE for buckets, only for files. Attempting to DELETE a bucket will result in a <em>Not Authorized</em> error.</li>
+			<li>IAS3 supports the HTTP 1.1 REST interface for S3 but <strong>not</strong> the SOAP interface.</li>
+			<li>IAS3 is much more likely to issue <span class="code">HTTP 307 Location</span> redirects than Amazon S3, therefore it is advised that you use an S3-compatible client with good <span class="code">HTTP 100 Continue</span> support (for example, curl version 7.19 and higher).</li>
+			<li>Amazon S3 allows users to <a href="http://docs.amazonwebservices.com/AmazonS3/latest/API/index.html?RESTBucketPUTacl.html">set ACLs for buckets and objects</a>. IAS3 does not. Instead, all items are created with ACLs of world readable and item uploader writable.</li>
+			<li>Amazon S3's POST and COPY are not implemented in IAS3.</li>
+			<li>IAS3 ignores HTTP 1.1 Range headers.</li>
+		</ul>
+		<p>
+		IAS3 also supports several of its own headers. These are discussed in more detail below.
+		</p>
+		</div><!-- level2 -->
+
+		<div class="level2">
+		<h2><a name="systemrequirements"></a>System Requirements</h2>
+		<p>
+		In order to use IAS3 to upload to Internet Archive, you must have:
+		</p>
+		<ul>
+			<li>An internet connection</li> <!-- Really? This has to be said? -->
+			<li>An Internet Archive <a href="http://www.archive.org/account/login.createaccount.php">patron account</a></li>
+			<li><a href="http://www.archive.org/account/s3.php">API keys</a> for IAS3</li>
+			<li>Client code which supports the Amazon S3 API. Most examples in this document use <a href="http://curl.haxx.se/">curl</a> due to simplicity. If you choose to use curl or libcurl to interface with IAS3 please be sure you are using version 7.19 or highter. These versions have excellent <span class="code">HTTP 100 Continue</span> support.</li>
+		</ul>
+		</div><!-- level2 -->
+
+		<div class="level2">
+		<h2><a name="usings3clients"></a>Using S3 Clients to Access IAS3</h2>
+		<p>
+		Internet Archive strives to make IAS3 compatible with current Amazon S3 client code. Ideally running the following command&#8212;replacing <span class="code">amazonaws.com</span> with <span class="code">us.archive.org</span>&#8212;on your S3 client code would allow you to use IAS3 with no further changes necessary:
+		</p>
+		<div class="code codeblock">
+		perl -pi -e  's/amazonaws.com/us.archive.org/g' *
+		</div>
+		<p>
+		Some Amazon S3 clients obey configuration files, many of will will allow you to define the preferred S3 hostname. Setting this hostname to <span class="code">s3.us.archive.org</span> in the configuration file should allow the client code to upload to Internet Archive with no further changes.
+		</p>
+		<p>
+		For instance, adding the following to your <span class="code">~/.s3cfg</span> configuration file for <a href="http://s3tools.org/s3cmd">s3cmd</a>, a popular Amazon S3 client, will allow you to connect to IAS3:
+		</p>
+		<div class="code codeblock">
+		[default]<br />
+		access_key = <a href="http://www.archive.org/account/s3.php">YOUR-ACCESS-KEY</a><br />
+		secret_key = <a href="http://www.archive.org/account/s3.php">YOUR-SECRET-KEY</a><br />
+		host_base = s3.us.archive.org<br />
+		host_bucket = %(bucket)s.s3.us.archive.org
+		</div>
+		</div><!-- level2 -->
+
+		<div class="level2">
+		<h2><a name="passingcredentials"></a>Passing Authorization Credentials to IAS3</h2>
+		<p>
+		<a href="http://www.archive.org/account/s3.php">Authorization credentials</a> may be passed to IAS3 by your Amazon S3-compatible client via configuration file (see above). In addition there is a clear text password mode. To use this mode, pass your access and secret keys as values to the <span class="code">Authorization</span> header:
+		<div class="code codeblock">
+			Authorization: LOW $accesskey:$secret
+		</div>
+		<p>
+		This is the authorization method shown in most of the examples in this document.
+		</p>
+		</div><!-- level2 -->
+
+		<div class="level2">
+		<h2><a name="amazons3headers"></a>Commonly Used Amazon S3 Headers</h2>
+		<p class="foo">
+		foo: are there any more of these? only the one ever appears in the examples
+		</p>
+		<p>
+		Most Amazon S3 headers can also be used with IAS3. This section briefly discusses the most commonly used Amazon S3 headers.
+		</p>
+
+		<h3><a name="amzautomakebucket"></a>x-amz-auto-make-bucket</h3>
+		<p>
+		The <span class="code">x-archive-auto-make-bucket</span> header allows you to both create an item and upload directly to it with a single command.
+		</p>
+		<p>
+		To enable this option, pass the <span class="code">x-archive-auto-make-bucket</span> header with a value of <span class="code">1</span>. If you do not specify this value you <strong>must</strong> create an item before you attempt to upload to it. The default value for this header is <span class="code">0</span>.
+		</p>
+		<p>
+		This header only works when PUTting to IAS3.
+		</p>
+		</div><!-- level2 -->
+
+		
+		<div class="level2">
+		<h2><a name="iaspecificheaders"></a>Internet Archive-specific IAS3 Headers</h2>
+		<p class="foo">
+		foo: I really don't like the formatting here. Maybe add a standard table to each header, listing where it can be used (PUT/GET/DELETE, etc.), valid values, default value?
+		</p>
+		<p>
+		Internet Archive has implemented specialized headers for controlling certain operations upon objects and files via IAS3.
+		</p>
+
+		<!-- Please keep these in alphabetical order -->
+
+		<div class="level3">
+		<h3><a name="cascadedelete"></a>x-archive-cascade-delete</h3>
+		<p>
+		Normal DELETE operation is to remove only the specified file. The <span class="code">x-archive-cascade-delete</span> header allows you to delete not only a file but also all derivative and original files associated with it. The <a href="http://www.archive.org/help/derivatives.php">Internet Archive derivatives help page</a> provides additional information about the files which may be deleted in this operation.
+		</p>
+		<p>
+		To enable this option, pass the <span class="code">x-archive-cascade-delete</span> header with a value of <span class="code">1</span>. The default value for this header is <span class="code">0</span>.
+		</p>
+		<p>
+		This header only works when DELETING a file within an item. <strong>Nota bene:</strong> DELETE is not allowed for items (buckets) in IAS3. You may only DELETE a file and its derivatives.
+		</p>
+		</div><!-- level3 -->
+
+		<div class="level3">
+		<h3><a name="ignorepreexistingbucket"></a>x-archive-ignore-preexisting-bucket</h3>
+		<p>
+		A normal PUT operation including <span class="code">x-archive-meta-*</span> headers will overwrite an existing <span class="code">IDENTIFIER_meta.xml</span> file. The <span class="code">x-archive-ignore-preexisting-bucket</span> header will instead overwrite the existing <span class="code">IDENTIFIER_meta.xml</span> file with the <span class="code">x-archive-meta-*-</span> header values passed in the same PUT command.
+		</p>
+		<p>
+		To enable this option, pass the <span class="code">x-archive-ignore-preexisting-bucket</span> header with a value of <span class="code">1</span>. The default value for this header is <span class="code">0</span>.
+		</p>
+		<p>
+		This header only works when PUTting to IAS3.
+		</p>
+		</div><!-- level3 -->
+
+		<div class="level3">
+		<h3><a name="keepoldversion"></a>x-archive-keep-old-version</h3>
+		<p>
+		Normal PUT operation will overwrite a file when it is used to upload a file of the same name. A normal DELETE operation will remove the specified file. The <span class="code">x-archive-keep-old-version</span> header will rename the specified file, prepending the filename with <span class="code">.~~</span> before proceding with the PUT or DELETE operation.
+		</p>
+		<!-- Aye, but what happens if there's already a file named .~~FILENAME ? -->
+		<p>
+		To enable this option, pass the <span class="code">x-archive-keep-old-version</span> header with a value of <span class="code">1</span>. The default value for this header is <span class="code">0</span>.
+		</p>
+		<p>
+		<strong>Caution!</strong> This header is experimental. Its use could result in unexpected results if interleaved with PUTs which do not use this header.
+		</p>
+		<p>
+		This header works for both PUT and DELETE for IAS3.
+		</p>
+		</div><!-- level3 -->
+
+		<div class="level3">
+		<h3><a name="meta"></a>x-archive-meta-*</h3>
+		<p>
+		The <span class="code">x-archive-meta-*</span> header is used for setting metadata values for an item. This header is discussed in detail below.
+		</p>
+		</div><!-- level3 -->
+
+		<div class="level3">
+		<h3><a name="queuederive"></a>x-archive-queue-derive</h3>
+		<p>
+		Normal operation after a file has been PUT into an item is to queue it for <a href="http://www.archive.org/help/derivatives.php">derivation to other file formats</a>. When PUTting either a very large file or a large number of files can bog down the derivation process and slow system performance. In these instances it is preferable to disable automatically derive queueing.
+		</p>
+		<p>
+		Please note: Files may be queued for derivation following upload. To queue an individual file, navigate to the item detail page on Internet Archive and click the <em>Edit Item!</em> link at the top. If you have several files which need to be queued, <a href="mailto:info@archive.org?subject=[Queue for Derive]">contact Internet Archive</a> for assistance.
+		</p>
+		<p>
+		To disable automated creation of derivative files, pass the <span class="code">x-archive-queue-derive</span> header with a value of <span class="code">0</span>. The default value for this header is <span class="code">1</span>.
+		</p>
+		<p>
+		This header works only when PUTting to IAS3.
+		</p>
+		</div><!-- level3 -->
+
+		<div class="level3">
+		<h3><a name="sizehint"></a>x-archive-size-hint</h3>
+		<p>
+		If the total size of files in your item will exceed 10 gigabytes, Internet Archive recommends you declare the size at the time of bucket creation. This allows the Internet Archive catalog to more easily place the item for storage, facilitating a potential speed boost to the upload.
+		</p>
+		<p>
+		To enable this option, pass the <span class="code">x-archive-size-hint</span> header with a value of the file size <strong>in bytes</strong>. If this header is not defined IAS3 will attempt to default to the value in the <span class="code">content-length</span> header.
+		</p>
+		<p>
+		This header works only when PUTting to IAS3.
+		</p>
+		</div><!-- level3 -->
+		</div><!-- level2 -->
+
+		<div class="level2">
+		<h2><a name="ias3identifiers"></a>IAS3 Identifiers</h2>
+		<p>
+		Each item at Internet Archive has a identifier. An identifier is composed of any unique combination of alphanumeric characters, underscore (_) and dash (-). While there are no official limits it is strongly suggested that they be between 5 and 80 characters in length.
+		</p>
+		<p>
+		Identifiers must be unique across the entirety of Internet Archive, not simply unique within a single collection.
+		</p>
+		<p>
+		Once defined an identifier <strong>can not</strong> be changed. It will travel with the item or object and is involved in every manner of accessing or referring to the item.
+		</p>
+		<p>
+		In IAS3, identifiers are defined implicitly in the target URL. For example:
+		</p>
+		<div class="code codeblock">
+		curl --location --header 'x-amz-auto-make-bucket:1' \<br />
+	  --header "Authorization: LOW $accesskey:$secret" \<br />
+		--header "x-archive-meta-collection:test_collection" \<br />
+	  --upload-file /Users/archive/Desktop/The_Open_Source_Way_03.pdf \<br />
+		http://s3.us.archive.org/<strong>vmb_tosw_trial_upload_03</strong>/The_Open_Source_Way_03.pdf
+		</div>
+		<p>
+		The identifier in this command is <span class="code">vmb_tosw_trial_upload_03</span>. The item may be viewed at its <em>details</em> page. The details page for any item is simply <span class="code">http://archive.org/details/</span> followed by the identifier. The details page for this example is:
+		</p>
+		<div class="code codeblock">
+		http://archive.org/details/vmb_tosw_trial_upload_03
+		</div>
+		</div><!-- level2 -->
+
+		<div class="level2">
+		<h2><a name="metadataheaders"></a>Settings Metadata Values via Headers</h2>
+		<!--
+		For more information about HTML in metadata, see CollectionsFAQ in the twiki.
+		For metadata header handling, see meta_xml_from_header.
+		-->
+		<p>
+		The <span class="code">x-archive-meta-*</span> header is used to set metadata values for items. <em>At this time Internet Archive does not support file-level metadata. Metadata may only be defined at an item level.</em>
+		</p>
+		<p>
+		All metadata fields are defined as key-value pairs passed via headers. The header format is:
+		</p>
+		<div class="code codeblock">
+			x-archive-meta-FIELDNAME:FIELDVALUE
+		</div>
+		<p>
+		For instance, if you are using curl you may set a value for the title metadata field using this header:
+		</p>
+		<div class="code codeblock">
+			--header "x-archive-meta-title:John Muir on Hetch Hetchy" \
+		</div>
+		<p>
+		Alternatively, you may use the Amazon S3 standard <span class="code">x-amz-meta-FIELDNAME:FIELDVALUE</span> header for setting metadata.
+		</p>
+		<p>
+		Metadata headers are sorted prior to processing. This sorting includes the <span class="code">x-amz-</span> or <span class="code">x-archive-</span> header prefixes, therefore if you use both of these prefixes when setting metadata values the fields set with <span class="code">x-amz-</span> will be processed first and may cause unexpected behavior. To avoid potential problems it is advised that you use either the <span class="code">x-archive-</span> or the <span class="code">x-amz-</span> header prefix when setting metadata, not both.
+		</p>
+		<p>
+		All metadata header values are interpreted as UTF-8 encoded characters.
+		</p>
+
+		<div class="level3">
+		<h3><a name="metadatafields"></a>Standard Internet Archive Metadata Fields</h3>
+		<p>
+		There are several standard metadata fields recognized for Internet Archive items. All metadata fields except <span class="code">identifier</span> are optional.
+		</p>
+		<p class="foo">
+		foo: alphabetize these<br />
+		foo: standardize wording; it's all over the place<br />
+		foo: field or tag? Pick a term and stick with it<br />
+		</p>
+		<div class="level4">
+		<h4><a name="metahidden"></a>hidden</h4>
+		<p class="foo">
+		foo: what's this do? It's admin/owner-only and doesn't appear on editxml.php
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metadataidentifier"></a>identifier</h4>
+		<p>
+		Each item at Internet Archive has a identifier. An identifier is composed of any unique combination of alphanumeric characters, underscore (_) and dash (-). While there are no official limits it is strongly suggested that they be between 5 and 80 characters in length.
+		</p>
+		<p>
+		An identifier <strong>can not</strong> be defined via metadata header. Instead identifiers are defined implicitly in the target URL. Please see <a href="#ias3identifiers">IAS Identifiers</a> above for additional information.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metatitle"></a>title</h4>
+		<p>
+		The title for the item. This appears in the header of the item's detail page on Internet Archive.
+		</p>
+		<p>
+		If a value is not specified for this field it will default to the identifier for the item.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="meteacreator"></a>creator</h4>
+		<p>
+		An entity primarily responsible for creating the files contained in the item.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metamediatype"></a>mediatype</h4>
+		<p>
+		The primary type of media contained in the item. While an item can contain files of diverse mediatypes the value in this field defines the appearance and functionality of the item's detail page on Internet Archive. In particular, the mediatype of an item defines what sort of online viewer is available for the files contained in the item.
+		</p>
+		<p>
+		The mediatype metadata field recognizes a limited set of values:
+		</p>
+		<ul>
+			<li><span class="code">audio</span><br />
+			The majority of audio items should receive this mediatype value. Items for the <a href="http://www.archive.org/details/etree">Live Music Archive</a> should instead use the <span class="code">etree</span> value.
+			</li>
+			<!-- This is an admin-only value
+			<li><span class="code">collection</span><br />
+			Denotes the item as a collection to which other collections and items can belong. <em>This mediatype value can only be used by Internet Archive staff members.</em>
+			</li>
+			<p>
+			This field may be modified only by an administrator or the owner of the item.
+			</p>
+			-->
+			<li><span class="code">data</span><br />
+			This is the default value for mediatype. Items with a mediatype of <span class="code">data</span> will be available in Internet Archive but you will not be able to browse to them. In addition there will be no online reader/player for the files.
+			</li>
+			<li><span class="code">etree</span><br />
+			Items which contain files for the <a href="http://www.archive.org/details/etree">Live Music Archive</a> should have a mediatype value of <span class="code">etree</span>. The Live Music Archive has very specific upload requirements. Please consult the <a href="http://www.archive.org/about/faqs.php#Live_Music_Archive">documentation</a> for the Live Music Archive prior to creating items for it.
+			</li>
+			<li><span class="code">image</span><br />
+			<!-- Essentially same as 'data': not browsable, no online viewer. YET. -->Items which predominantly consist of image files should receive a mediatype value of <span class="code">image</span>. Currently these items will not available for browsing or online viewing in Internet Archive but they will require no additional changes when this mediatype receives additional support in the Archive.
+			</li>
+			<li><span class="code">movies</span><br />
+			All videos (television, features, shorts, etc.) should receive a mediatype value of <span class="code">movies</span>. These items will be displayed with an online video player.
+			</li>
+			<li><span class="code">software</span><br />
+			Items with a mediatype of <span class="code">software</span> are accessible to browse via Internet Archive's <a href="http://www.archive.org/details/software">software collection</a>. There is no online viewer for software but all files are available for download.
+			</li>
+			<li><span class="code">texts</span><br />
+			Items with a mediatype of <span class="code">texts</span> will appear with the <a href="https://github.com/openlibrary/bookreader">online bookreader</a>. Internet Archive will also attempt to OCR files in these items.
+			</li>
+			<li><span class="code">web</span><br />
+			The <span class="code">web</span> mediatype value is reserved for items which contain web archive <a href="http://www.digitalpreservation.gov/formats/fdd/fdd000236.shtml">WARC</a> files.
+			</li>
+		</ul>
+		<p>
+		If the mediatype value you set is not in the list above it will be saved but ignored by the system.
+		</p>
+		<p>
+		This field may be modified only by an administrator or the owner of the item.
+		</p>
+		<p>
+		If a value is not specified for this field it will default to <span class="code">data</span>.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metacollection"></a>collection</h4>
+		<p>
+		A collection is a specialized item used for curation and aggregation of other items. Assigning an item to a collection defines where the item may be located by a user browsing Internet Archive. To assign an item to a collection, pass its identifier as the value for an <span class="code">x-archive-metadata-collection</span> header. For example, if you are using curl you can assign an item to the <em>Community Texts</em> collection (identifier: <em>opensource</em>) with the following header:
+		</p>
+		<div class="code codeblock">
+		--header 'x-archive-metadata-collection:opensource' \
+		</div>
+		<p>
+		A collection <strong>must</strong> exist prior to assigning any items to it. Currently collections can only be created by Internet Archive staff members. Please <a href="mailto:info@archive.org?subject=[Collection Creation Request]">contact Internet Archive</a> if you need a collection created.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metadescription"></a>description</h4>
+		<p>
+		A description of the item.
+		</p>
+		<p>
+		The value of this metadata field may contain HTML. &lt;script&gt; tags and CSS are not allowed.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metadata"></a>date</h4>
+		<p>
+		The publication, production or other similar date of this item. Please use an <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> compatible format for this date. For instance, these are all valid date formats: 
+		</p>
+		<div class="code codeblock">
+		<ul>
+			<li>YYYY</li>
+			<li>YYYY-MM-DD</li>
+			<li>YYYY-MM-DD HH:MM:SS</li>
+		</ul>
+		</div>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metasubject"></a>subject</h4>
+		<p>
+		Keyword(s) or phrase(s) that may be searched for to find your item. Separate each keyword or phrase with a semicolon (";") character. It is helpful but <strong>not</strong> necessary for you to use <a href="http://id.loc.gov/authorities/subjects.html">Library of Congress Subject Headings</a> for the value of this metadata header.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metalicenseurl"></a>licenseurl</h4>
+		<p>
+		A URL to the license which covers the works contained in the item.
+		</p>
+		<p>
+		<!--
+			foo: Really unsure of this wording.
+		-->
+		Internet Archive recommends (but does not require) <a href="http://creativecommons.org">Creative Commons</a> licensing. Creative Commons provides a <a href="http://creativecommons.org/choose/?partner=ia&exit_url=http%3A%2F%2Fwww.archive.org%2Fservices%2Flicense-chooser.php%3Flicense_url%3D%5Blicense_url%5D%26license_name%3D%5Blicense_name%5D%26license_image%3D%5Blicense_button%5D%26deed_url%3D%5Bdeed_url%5D&jurisdiction_choose=1">license selector</a> for finding the correct license for your needs.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metapick"></a>pick</h4>
+		<p>
+		Each collection page on Internet Archive may include a "Staff Picks" section. This section will highlight a single item in the collection. This item will be selected at random from the items with a <span class="code">pick</span> metadata value of <span class="code">1</span>. If there are no items with this <span class="code">pick</span> metadata value the "Staff Picks" section will not appear on the collection page.
+		</p>
+		<p>
+		This field may be modified only by an administrator or the owner of the item.
+		</p>
+		<p>
+		By default all new items have no <span class="code">pick</span> metadata value.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metanoindex"></a>noindex</h4>
+		<!--
+		Metadata is in the search engine. Full text indexing happens at an item-level only by way of the online book reader.
+		-->
+		<!--
+		See line 539 of www/common/WorkBase.inc for info re: just being there is enough not to index; value doesn't matter.
+		-->
+		<p>
+		All items will have their metadata included in the Internet Archive search engine. To disable indexing in the search engine, include a <span class="code">noindex</span> metadata tag. The value of the tag does not matter. Its presense is enough to trigger not including the metadata in the search engine.
+		</p>
+		<p>
+		If an item's metadata has already been indexed in the search engine, setting <span class="code">noindex</span> will remove it from the index.
+		</p>
+		<p>
+		Items whose metadata is not not included in the search engine index are not considered "public" per se and therefore will not have a value in the <span class="code">publicdate</span> metadata field (see below).
+		</p>
+		</div><!-- level4 -->
+		<!--
+		<div class="level4">
+		<h4><a name="metaneverindex"></a>neverindex</h4>
+		<p>
+		This metadata field is mentioned in meta_xml_from_header but is not one of the ones normally exposed via the item metadata editing web form. There currently is no further information about what it does.
+		</p>
+		<p>
+		Items with 'neverindex' set get their 'publicdate' unset. They are not considered public, per se.
+		</p>
+		</div> level4 
+		-->
+		<div class="level4">
+		<h4><a name="metapublicdate"></a>publicdate</h4>
+		<p class="foo">
+		foo: date format accepted?
+		</p>
+		<p>
+		Items which have had their metadata included in the Internet Archive search engine index are considered to be public. The date the metadata is added to the index is the public date for the item.
+		</p>
+		<p>
+		This field may be modified only by an administrator or the owner of the item.
+		</p>
+		<p>
+		While it is possible to set the <span class="code">publicdate</span> metadata value it is not recommended. This value is typically set by automated processes.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metaaddeddate"></a>addeddate</h4>
+		<p class="foo">
+		foo: date format accepted?
+		</p>
+		<p>
+		The <span class="code">addeddate</span> metadata tag contains the date the item was added to Internet Archive.
+		</p>
+		<p>
+		While it is possible to set the <span class="code">addeddate</span> metadata value it is not recommended. This value is typically set by automated processes.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metaadder"></a>adder</h4>
+		<p class="foo">
+		foo: pretty sure this value is the username, not the screen name. Screen name is only in the display.
+		</p>
+		<p>
+		The screen name of the account which added the item to the Internet Archive.
+		</p>
+		<p>
+		While is is possible to set the <span class="code">adder</span> metadata value it is not recommended. This value is typically set by automated processes.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metauploader"></a>uploader</h4>
+		<!--
+		'uploader' is essentially the owner of the item and dictates (mostly) who can make changes to it. Open source items excepted.
+		-->
+		<p>
+		The Internet Archive username of the account which uploaded the file(s) to the item.
+		</p>
+		<p>
+		While it is possible to set the <span class="code">uploader</span> metadata value it is not recommended. This value is typically set by automated processes.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metaupdater"></a>updater</h4>
+		<p>
+		The Internet Archive username of the account which updated the item. This field is repeatable.
+		</p>
+		<p>
+		This field may be modified only by an administrator or the owner of the item.
+		</p>
+		<p>
+		While it is possible to set the <span class="code">updater</span> metadata value it is not recommended. This value is typically set by automated processes.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metaupdatedate"></a>updatedate</h4>
+		<p class="foo">
+		foo: date format?
+		</p>
+		<p>
+		The date on which an update was made to the item. This field is repeatable.
+		</p>
+		<p>
+		This field may be modified only by an administrator or the owner of the item.
+		</p>
+		<p>
+		While it is possible to set the <span class="code">updatedate</span> metadata value it is not recommended. This value is typically set by automated processes.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metanotes"></a>notes</h4>
+		<p>
+		The <span class="code">notes</span> metadata field can contain any information about the item.
+		</p>
+		<p>
+		The value of this metadata field may contain HTML. &lt;script&gt; tags and CSS are not allowed.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metarights"></a>rights</h4>
+		<p>
+		The value of the <span class="code">rights</span> metadata field should be a statement of the rights held in and over the item.
+		</p>
+		<p>
+		The value of this metadata field may contain HTML. &lt;script&gt; tags and CSS are not allowed.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metacontributor"></a>contributor</h4>
+		<p>
+		The value of the <span class="code">contributor</span> metadata field is information about the entity responsible for making contributions to the content of the item. This is often the library, organization or individual making the item available on Internet Archive.
+		</p>
+		<p>
+		The value of this metadata field may contain HTML. &lt;script&gt; tags and CSS are not allowed.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metapublisher"></a>publisher</h4>
+		<p>
+		The publisher of the material available in the item.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metalanguage"></a>language</h4>
+		<p>
+		The primary language of the material available in the item.
+		</p>
+		<p>
+		While the value of the <span class="code">language</span> metadata field can be any value, Internet Archive prefers they be <a href="http://www.loc.gov/marc/languages/language_name.html">MARC21 Language Codes</a>.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metacoverage"></a>coverage</h4>
+		<p>
+		The extent or scope of the content of the material available in the item. The value of the <span class="code">coverage</span> metadata field may include geographic place, temporal period, jurisdiction, etc. For items which contain multi-volume or serial content, place the statement of holdings in this metadata field.
+		</p>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="metacredits"></a>credits</h4>
+		<p>
+		If known, enter the participants in the production of the materials contained in the item in the <span class="code">credits</span> metadata field.
+		</p>
+		<p>
+		The value of this metadata field may contain HTML. &lt;script&gt; tags and CSS are not allowed.
+		</p>
+		</div><!-- level4 -->
+		</div><!-- level3 -->
+		<div class="level3">
+
+		<h3><a name="custommetadata"></a>Custom Metadata Fields</h3>
+		<p>
+		Internet Archive strives to be metadata agnostic, enabling users to define the metadata format which best suits the needs of their material. In addition to the standard metadata fields listed above you may also define as many custom metadata fields as you require. These metadata fields can be defined ad hoc at item creation or metadata editing time and do not have to be defined in advance. For instance, if your organization uses the <a href="http://www.pbcore.utah.edu/PBCore/UserGuide.html">PBCORE</a> metadata schema you can include the appropriate metadata fields in your Internet Archive item:
+		</p>
+		<div class="code codeblock">
+		x-archive-meta-pbcoreGenre:Educational<br />
+		x-archive-meta-pbcoreCoverage:Long Beach, CA<br />
+		x-archive-meta-pbcoreCoverageType:Spatial<br />
+		etc.
+		</div>
+		<p>
+		<strong>PLEASE NOTE!</strong> <a href="http://www.faqs.org/rfcs/rfc822.html">RFC 822</a> disallows the underscore character (_) in HTTP header names. Therefore to use an underscore in the name of a custom metadata field you must replace the underscore (_) with two hyphens (--). These will be translated into an underscore character when the metadata is processed by the server. For example:
+		</p>
+		<div class="code codeblock">
+			x-archive-meta-isbn--10:080652510X
+		</div>
+		<p>
+		This example will generate a metadata field named <span class="code">isbn_10</span>.
+		</p>
+		</div><!-- level3 -->
+		<div class="level3">
+
+		<h3><a name="repeatingmetadata"></a>Repeating Metadata Fields</h3>
+		<p>
+		Certain metadata fields such as <span class="code">collection</span> and <span class="code">subject</span> can be repeated. To repeat a metadata header you must sequentially number each instance of the header in your command:
+		</p>
+		<div class="code codeblock">
+			x-archive-meta01-$meta_name:$meta_value_a<br />
+			x-archive-meta02-$meta_name:$meta_value_b
+		</div>
+		<p class="foo">
+		foo: Need a better example? vaguely recall collections don't need the number but go in order of appearance in the command...?
+		</p>
+		<p>
+		For example, if an item contains both PDF and mp3 files you may assign it to both the <span class="code">texts</span> and <span class="code">opensource_audio</span> collections by including the following two lines in a curl command:
+		</p>
+		<div class="code codeblock">
+			--header 'x-archive-meta01-collection:texts' \<br />
+			--header 'x-archive-meta02-collection:opensource_audio' \
+		</div>
+		</div><!-- level3 -->
+		</div><!-- level2 -->
+
+<!--
+These are essentially staff-only fields. We may publicize some of them at some point but that point is not now. Instead putting them in https://wiki.archive.org/twiki/bin/view/CollectionsBox/CollectionsFAQ so they're not lost in the mists of time and space.
+
+		<div class="level2">
+		<h2><a name="additionalmetadata"></a>Additional Specialized Metadata Fields</h2>
+		<p class="foo">
+		Internet Archive supports several specialized metadata fields, the values for which can affect various operations upon items and the files they contain.
+		</p>
+		<ul class="foo">
+		<li>bookreader-defaults:mode/1up -  BookReader will start up in 1-page mode instead of the usual 2-page mode</li>
+		<li>betterpdf:true - re-derive PDFs at a higher resolution. See https://wiki.archive.org/twiki/bin/view/BooksGroup/ScanningCenterTroubleShooting</li>
+		</ul>
+		</div> level2
+-->
+
+		<div class="level2">
+		<h2><a name="metadatafiles"></a>Setting Metadata Values via Files</h2>
+		<p>
+		While the preferred and recommended method for setting Internet Archive item metadata is via <a href="#metadataheaders">headers</a>, it is possible to provide files containing metadata. If you choose to provide a metadata file instead of using headers it is strongly recommended that the metadata file be the first uploaded during item creation.
+		</p>
+		<p>
+		When providing a metadata file, please provide only one file per item. It is not necessary to provide a metadata file in each format. Additional files will be generated automatically from the one which you provide.
+		</p>
+		<p>
+		The valid metadata file formats:
+		</p>
+		<div class="level3">
+		<h3><a name="marcxml"></a>IDENTIFIER_marc.xml</h3>
+		<p>
+		This file must contain metadata in well-formed <a href="http://www.loc.gov/standards/marcxml/">MARCXML</a> format. It must be named appropriately or it will not be recognized. The proper naming scheme is the items <a href="#metadataidentifier">identifier</a> followed by <span class="code">_marc.xml</span>.
+		</p>
+		<p>
+		An <a href="#examplemarcxml">example IDENTIFIER_marc.xml file</a> can be found in the Appendix.
+		</p>
+		</div><!-- level3 -->
+		<div class="level3">
+		<h3><a name="metamrc"></a>IDENTIFIER_meta.mrc</h3>
+		<p>
+		This file must contain metadata in binary MARC format according to the <a href="http://www.iso.org/iso/iso_catalogue/catalogue_tc/catalogue_detail.htm?csnumber=41319">ISO 2709</a> standard. It must be named appropriately or it will not be recognized. The proper naming scheme is the items <a href="#metadataidentifier">identifier</a> followed by <span class="code">_meta.mrc</span>.
+		</p>
+		<p>
+		An <a href="#examplemrcfile">example IDENTIFIER_meta.mrc file</a> can be found in the Appendix.
+		</p>
+		</div><!-- level3 -->
+		<div class="level3">
+		<h3><a name="metadatafileprocessing"></a>How These Metadata Files Are Processed</h3>
+		<p>
+		If an <span class="code">IDENTIFIER_meta.mrc</span> file is located it is used to generate an <span class="code">IDENTIFIER_marc.xml</span> file. Any existing <span class="code">IDENTIFIER_marc.xml</span> file will be overwritten by this operation.
+		</p>
+		<!--
+		The next paragraph is not entirely true. If dc.xml is newer than marc.xml then dc.xml will be used as-is. But as we're telling people that they shouldn't modify or upload dc.xml...
+		-->
+		<p>
+		The <span class="code">IDENTIFIER_marc.xml</span> file is used to generate a <span class="code">IDENTIFIER_dc.xml</span> file of <a href="http://dublincore.org/">Dublin Core metadata</a>. Any existing <span class="code">IDENTIFIER_dc.xml</span> file will be overwritten by this operation. The Dublin Core fields are extracted and populated according to the <a href="http://www.loc.gov/standards/marcxml/xslt/MARC21slim2OAIDC.xsl">Library of Congress MARC21 to Dublin Core XSL stylesheet</a>. In addition, Internet Archive will extract information from the following MARCXML fields:
+		</p>
+		<ul>
+			<li>041 subfield a and 130 subfield 1 are searched for language codes. If multiple language codes are located they are all added to the item's metadata.</li>
+			<li>260 subfield c is searched for an item date.</li>
+			<li>010 subfield a is searched for the LCCN.</li>
+		</ul>
+		<p>
+		The item's definitive metadata file, <a href="#metaxml"><span class="code">IDENTIFIER_meta.xml</span></a> is generated from the <span class="code">IDENTIFIER_dc.xml</span> Dublin Core file.
+		</p>
+		</div><!-- level3 -->
+
+		<div class="level2">
+		<h2><a name="specialfiles"></a>Special Files</h2>
+		<p>
+		Each Internet Archive item is comprised of several files. Many of these files are automatically generated and <strong>should not</strong> be either removed or modified.
+		</p>
+
+		<div class="level3">
+		<h3><a name="metaxml"></a>IDENTIFIER_meta.xml</h3>
+		<p>
+		<span class="code">IDENTIFIER_meta.xml</span> is the definitive metadata file for the item. It is automatically generated at item creation time using the metadata provided either <a href="#metadataheaders">via headers</a> or <a href="#metadatafiles">via files</a>.
+		</p>
+		<p>
+		Please <strong>do not</strong> delete or modify this file. If you must modify the item's metadata, please either use the "Edit Item!" link at the top of its detail page or submit updated metadata via the IAS3 API. See the <a href="ignorepreexistingbucket">x-archive-ignore-preexisting-bucket</a> header for additional information about updating an item's metadata via IAS3.
+		</p>
+		</div><!-- level3 -->
+
+<!--
+Mentioned above and not really any need to mention it again. May delete this section later in editing.
+
+		<div class="level3">
+		<h3><a name="dcxml"></a>IDENTIFIER_dc.xml</h3>
+		<p class="foo">
+		foo: dublin core metadata<br />
+		generated from .mrc or marc.xml file<br />
+		don't change this; preferred don't provide own (likely to be overwritten); auto-generated<br />
+		http://www.loc.gov/standards/marcxml/xslt/MARC21slim2OAIDC.xsl
+		</p>
+		</div>level3
+-->
+
+		<div class="level3">
+		<h3><a name="filesxml"></a>IDENTIFIER_files.xml</h3>
+		<p>
+		<span class="code">IDENTIFIER_files.xml</span> is an auto-generated file cataloging all of the files contained in the item. In addition to the filenames the <span class="code">IDENTIFIER_files.xml</span> file will also list the file format and various hashes for each file. If the file is a <a href="http://www.archive.org/help/derivatives.php">derivative</a> <span class="code">IDENTIFIER_files.xml</span> will list the original file from which it was derived.
+		</p>
+		<p>
+		For example, here is an extract from the <span class="code">japanesefairytal00ozak_files.xml</span> file for <a href="http://www.archive.org/details/japanesefairytal00ozak">Japanese Fairy Tales</a>:
+		</p>
+		<div class="code codeblock">
+			&lt;file name="japanesefairytal00ozak.epub" source="derivative"&gt;<br />
+			&nbsp;&nbsp;&lt;format&gt;EPUB&lt;/format&gt;<br />
+			&nbsp;&nbsp;&lt;original&gt;japanesefairytal00ozak_abbyy.gz&lt;/original&gt;<br />
+			&nbsp;&nbsp;&lt;mtime&gt;1294020233&lt;/mtime&gt;<br />
+			&nbsp;&nbsp;&lt;size&gt;1230045&lt;/size&gt;<br />
+			&nbsp;&nbsp;&lt;md5&gt;1d87b3e04ca0b617e041bbcb0cd7f1a5&lt;/md5&gt;<br />
+			&nbsp;&nbsp;&lt;crc32&gt;7326f3ce&lt;/crc32&gt;<br />
+			&nbsp;&nbsp;&lt;sha1&gt;5434df04b1b811b03e7d9a32bde3119d3ca924c8&lt;/sha1&gt;<br />
+			&lt;/file&gt;
+		</div>
+		<p>
+		Please <strong>do not</strong> delete or modify this file.
+		</p>
+		</div><!-- level3 -->
+
+		<div class="level3">
+		<h3><a name="rulesconf"></a>IDENTIFIER_rules.conf</h3>
+		<p>
+		Whereas the <a href="#queuederive">x-archive-queue-derive</a> header enables or disables queuing files for <a href="http://www.archive.org/help/derivatives.php">deriving</a> for the entire item, it it possible to disable the creation of certain derive files using the <span class="code">IDENTIFIER_rules.conf</span> file. There are three options for selecting which derivative formats to disable via <span class="code">IDENTIFIER_rules.conf</span>:
+		</p>
+		<div class="level4">
+		<h4><a name="specificformats"></a>Specific File Formats</h4>
+		<p>
+		You may disable creation of specific derivative formats by listing them#&8212;one format per line&#8212;in the <span class="code">IDENTIFIER_rules.conf</span> file. The valid values for file formats can be found in the header rows of the <a href="http://www.archive.org/help/derivatives.php">derivatives chart</a>.
+		</p>
+		<p>
+		For example, to disable creation of h.264 and Ogg Video derivative files, your <span class="code">IDENTIFIER_rules.conf</span> file should contain the following:
+		</p>
+		<div class="code codeblock">
+		h.264<br />
+		Ogg Video
+		</div>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="lossyformats"></a>Only 'lossy' File Formats</h4>
+		<p>
+		Some derivative file formats (mp3, ogg, ogv, mp4, webm) are considered "lossy" because they use a compression algorithm which produces a file which is not identical to the original. To prevent the creation of lossy derivatives, upload a <span class="code">IDENTIFIER_rules.conf</span> file containing this line:
+		</p>
+		<div class="code codeblock">
+		CAT.lossy
+		</div>
+		</div><!-- level4 -->
+		<div class="level4">
+		<h4><a name="allderivatives"></a>All Derivatives</h4>
+		<p>
+		It is possible to disable creation of all derivative files using the <span class="code">IDENTIFIER_rules.conf</span> file. This is equivalent to setting the  <a href="#queuederive">x-archive-queue-derive</a> header to a value of 0.
+		</p>
+		<p>
+		To disable all derivatives, upload a <span class="code">IDENTIFIER_rules.conf</span> file containing this line:
+		</p>
+		<div class="code codeblock">
+		CAT.all
+		</div>
+		</div><!-- level4 -->
+		<p>
+		A new or modified <span class="code">IDENTIFIER_rules.conf</span> file will not be recognized until a new derive process is initiate for the item. It is currently not possible to initiate this process via the IAS3 API. To initiate the derive process in the Internet Archive interface:
+		</p>
+		<ol>
+			<li>Login to Internet Archive</li>
+			<li>Navigate to the item's page on Internet Archive</li>
+			<li>Find the "Edit Item!" link in the upper right of the item</li>
+			<li>Click the "change the information" link</li>
+			<li>Click the "Item Manager" link near the top of the page</li>
+			<li>Click the "derive" button</li>
+		</ol>
+		<p>
+		If now-excluded formats had previously been derived, initiating a derive process will remove the files from the item.
+		</p>
+		</div><!-- level3 -->
+
+		</div><!-- level2 -->
+
+		<div class="level2">
+		<h2><a name="troubleshooting"></a>Troubleshooting</h2>
+		<div class="level3">
+		<h3><a name="objectlog"></a>Viewing a log of your IAS3 object</h3>
+		<p>
+		Each file uploaded to Internet Archive via IAS3 will have a log file. To view the log, append <span class="code">?log</span> to the URL of the endpoint. For example:
+		</p>
+			<div class="code codeblock">
+			  http://s3.us.archive.org/sam-s3-test-08/demo-intro-to-k.pdf?log
+			</div>
+		<p>
+		<strong>Please note:</strong> The log format may change at any time.
+		</p>
+		</div><!-- level3 -->
+		<div class="level3">
+		<h3><a name="filenotappearing"></a>My file isn't appearing in the item.</h3>
+		<p>
+		When a file is added to an item it is staged in temporary storage and ingested via the Archive's content management system. While this usually happens very quickly, during periods of heavy system load this process can take a few minutes.
+		</p>
+		<p>
+		It is also possible that you are viewing a cached version of the item's detail page. Please either clear your web browser's cache or append this parameter to the item's URL:
+		</p>
+		<div class="code codeblock">
+		reCache=1
+		</div>
+		</div><!-- level3 -->
+		<div class="level3">
+		<h3><a name="testcollection"></a>Is there sandbox I can use for testing IAS3?</h3>
+		<p>
+		Internet Archive provides a collection where you can test your item creation and uploads. Items assigned to this collection are removed from the Archive once every thirty days or so. To use this collection, assign your test items to it using this header:
+		</p>
+		<div class="code codeblock">
+			x-archive-meta-collection:test_collection
+		</div>
+		<p>
+		Please remember that <a href="#ias3identifiers">item identifiers</a> must be unique across the entire Archive, including for items in the test collection. Your test scripts may need to be modified to avoid identifier collision once you start creating and uploading to non-test items.
+		</p>
+		</div><!-- level3 -->
+		<div class="level3">
+		<h3><a name="catalog"></a>What happens to my item/file after uploading?</h3>
+		<p>
+		Several processes will operate on your item after it has been created and after each file is added to it. These processes include archiving the content, deriving new files from your originals and backing up the item and its contents. You may view the progress of any of these processes on the item's <em>catalog</em> page:
+		</p>
+		<div class="code codeblock">
+			http://www.archive.org/catalog.php?history=1&amp;identifier=IDENTIFIER
+		</div>
+		<p>
+		Clicking the <span class="code">task_id</span> for a process will display a detailed log for it.
+		</p>
+		<p>
+		You may also reach this page by clicking the 'Item History' link on the item's detail page on Internet Archive.
+		</p>
+		</div><!-- level3 -->
+		<div class="level3">
+		<h3><a name-"controlingderives"></a>Is there any way to control how files derive?</h3>
+		<p>
+		You may use either the <a href="#rulesconf"><span class="code">IDENTIFIER_rules.conf</span></a> file or the <a href="#queuederive"><span class="code">x-archive-queue-derive</span></a> header to control the creation of <a href="http://www.archive.org/help/derivatives.php">derivative files</a> from your originals.
+		</p>
+		</div><!-- level3 -->
+		</div><!-- level2 -->
+		
+		<div class="level2">
+		<h2><a name="downloading"></a>Downloading via IAS3</h2>
+		<p>
+		While the IAS3 API supports both <span class="code">GET</span> and <span class="code">HEAD</span> methods for retrieving files, higher performance can be achieved via the Internet Archive web architecture.
+		</p>
+		<p>
+		Each file in an Internet Archive item can be retrieved via a <span class="code">/download/</span> link:
+		</p>
+		<div class="code codeblock">
+			http://archive.org/download/IDENTIFIER/FILENAME.EXT
+		</div>
+		<p>
+		This is the recommended method for downloading files from Internet Archive.
+		</p>
+		</div>
+
+		<div class="level2">
+		<h2><a name="codeexamples"></a>Code Examples</h2>
+		<!--
+		<p class="foo">
+		foo: make sure each of the IA-specific headers is in an example somewhere
+		</p>
+		-->
+
+		<div class="level3">
+		<h3><a name="curl"></a>curl</h3>
+			<div class="level4">
+			<h4><a name="curltext"></a>Text item (a PDF will be OCR'd):</h4>
+			<div class="code codeblock">
+		curl --location --header 'x-amz-auto-make-bucket:1' \<br />
+				 --header 'x-archive-meta01-collection:opensource' \<br />
+				 --header 'x-archive-meta-mediatype:texts' \<br />
+				 --header 'x-archive-meta-sponsor:Andrew W. Mellon Foundation' \<br />
+				 --header 'x-archive-meta-language:eng' \<br />
+				 --header "authorization: LOW $accesskey:$secret" \<br />
+				 --upload-file /home/samuel/public_html/intro-to-k.pdf \<br />
+		http://s3.us.archive.org/sam-s3-test-08/demo-intro-to-k.pdf
+			</div>
+			</div><!-- level4 -->
+
+			<div class="level4">
+			<h4><a name="curlmovie"></a>Movie item (Will get video player on details page):</h4>
+			<div class="code codeblock">
+			curl --location --header 'x-amz-auto-make-bucket:1' \<br />
+					 --header 'x-archive-meta01-collection:opensource_movies' \<br />
+					 --header 'x-archive-meta-mediatype:movies' \<br />
+					 --header 'x-archive-meta-title:Ben plays piano.' \<br />
+					 --header "authorization: LOW $accesskey:$secret" \<br />
+					 --upload-file ben-2009-05-09.avi \<br />
+			http://s3.us.archive.org/ben-plays-piano/ben-plays-piano.avi
+			</div>
+			</div><!-- level4 -->
+
+			<div class="level4">
+			<h4><a name="curlexistingitem"></a>Uploading a file to an existing item:</h4>
+			<div class="code codeblock">
+			curl --location \<br />
+					 --header "authorization: LOW $accesskey:$secret" \<br />
+					 --upload-file /home/samuel/public_html/intro-to-k.pdf \<br />
+			http://s3.us.archive.org/sam-s3-test-08/demo-intro-to-k.pdf
+			</div>
+			</div><!-- level4 -->
+			
+			<div class="level4">
+			<h4><a name="curlnewmetadata"></a>Destroy and respecify the metadata for an item:</h4>
+			<div class="code codeblock">
+			curl --location \<br />
+					 --header 'x-archive-ignore-preexisting-bucket:1' \<br />
+					 --header 'x-archive-meta01-collection:opensource' \<br />
+					 --header 'x-archive-meta-mediatype:texts' \<br />
+					 --header 'x-archive-meta-title:Fancy new title' \<br />
+					 --header "authorization: LOW $accesskey:$secret" \<br />
+					 --upload-file /dev/null \<br />
+			http://s3.us.archive.org/sam-s3-test-08
+			</div>
+			</div><!-- level4 -->
+
+			<div class="level4">
+			<h4><a name="curlmetadata"></a>A Movie example with subject keywords, and creative commons license:</h4>
+			<div class="code codeblock">
+			curl --location --header 'x-archive-ignore-preexisting-bucket:1' \<br />
+					 --header "authorization: LOW $accesskey:$secret" \<br />
+					 --header 'x-archive-meta-mediatype:movies' \<br />
+					 --header 'x-archive-meta-collection:opensource_movies' \<br />
+					 --header 'x-archive-meta-title:electricsheep-flock-244' \<br />
+					 --header 'x-archive-meta-creator:Scott Draves and the Electric Sheep' \<br />
+					 --header 'x-archive-meta-description:Archive of flock 244 of the Electric Sheep, see <a href=http://electricsheep.org >http://electricsheep.org</a> and <a href=http://scottdraves.com > http://scottdraves.com</a>' \<br />
+					 --header 'x-archive-meta-date:2009' \<br />
+					 --header 'x-archive-meta-year:2009' \<br />
+					 --header 'x-archive-meta-subject:electricsheep,alife,art,draves,spotworks,evolution,algorithm' \<br />
+					 --header 'x-archive-meta-licenseurl:http://creativecommons.org/licenses/by-nc/3.0/us/' \<br />
+					 --upload-file /dev/null \<br />
+			http://s3.us.archive.org/electricsheep-flock-244
+			</div>
+			</div><!-- level4 -->
+		</div><!-- level3 -->
+
+		<div class="level3">
+		<h3><a name="perl"></a>Perl</h3>
+			<div class="level4">
+				<h4><a name="perluploadmany"></a>An extract of a script for uploading multiple files via IAS3 using LWP</h4>
+				<div class="code codeblock">
+my $ua = LWP::UserAgent-&gt;new();<br />
+$ua-&gt;agent('upload_via_IAS3/' . VERSION);<br />
+$ua-&gt;timeout(20);<br />
+$ua-&gt;env_proxy;<br />
+<br />
+$ua-&gt;default_headers-&gt;push_header('authorization'=&gt;"LOW $ias3keys");<br />
+<br />
+# start actual upload tasks, doing some optimization.<br />
+# - items with no file to upload are not created<br />
+# - item creation is always combined with the first file upload<br />
+my @uploadQueue = @{$task-&gt;{files}};<br />
+while (@uploadQueue) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;my $file = shift @uploadQueue;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;my $uripath = "/" . $file-&gt;{item}{name} . "/" . $file-&gt;{filename};<br />
+&nbsp;&nbsp;&nbsp;&nbsp;warn "File: ", $file-&gt;{file}, " -&gt; ", $uripath, "\n";<br />
+&nbsp;&nbsp;&nbsp;&nbsp;if (!$forceupload &amp;&amp; $file-&gt;{uploaded}) {<br />
+&nbsp;&nbsp;my $last = $file-&gt;{uploaded};<br />
+&nbsp;&nbsp;# this file was uploaded in previous run. re-upload it only when<br />
+&nbsp;&nbsp;# something has changed.<br />
+&nbsp;&nbsp;if ($file-&gt;{mtime} &lt;= $last-&gt;{mtime} &amp;&amp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$file-&gt;{item}{name} eq $last-&gt;{itemName} &amp;&amp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$file-&gt;{filename} eq $last-&gt;{filename}) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;warn "skipping - no change since last upload\n";<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;next;<br />
+&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;if ($checkstore) {<br />
+&nbsp;&nbsp;my $dlurl = IADLURLBASE . $uripath;<br />
+&nbsp;&nbsp;print STDERR "checking ", $dlurl, "...\n" if $verbose;<br />
+&nbsp;&nbsp;my $res = $ua-&gt;head($dlurl);<br />
+&nbsp;&nbsp;if ($res-&gt;is_success) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# file exists - check date (of last upload) against file's mtime<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;my $m = $res-&gt;headers-&gt;{'date'};<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if ($m &amp;&amp; str2time($m) &gt;= $file-&gt;{mtime}) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;warn "skipping - upload date later than file's mtime\n";<br />
+&nbsp;&nbsp;&nbsp;&nbsp;next;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;} else {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# 404 or other failure - upload the file<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print $res-&gt;status_line, "\n";<br />
+&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;my $waitUntil = $file-&gt;{waitUntil};<br />
+&nbsp;&nbsp;&nbsp;&nbsp;if (defined $waitUntil) {<br />
+&nbsp;&nbsp;my $sec = $waitUntil - time();<br />
+&nbsp;&nbsp;while ($sec &gt; 0) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print STDERR "holding off $sec second", ($sec &gt; 1 ? 's' : ''), "...   ";<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sleep(1);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$sec--;<br />
+&nbsp;&nbsp;} continue { print STDERR "\r"; }<br />
+&nbsp;&nbsp;print STDERR "\n";<br />
+&nbsp;&nbsp;delete $file-&gt;{waitUntil};<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;# ok, ready to go<br />
+&nbsp;&nbsp;&nbsp;&nbsp;my $item = $file-&gt;{item};<br />
+&nbsp;&nbsp;&nbsp;&nbsp;my @headers = ();<br />
+&nbsp;&nbsp;&nbsp;&nbsp;# prepare item metadata if the item hasn't been created yet (in this<br />
+&nbsp;&nbsp;&nbsp;&nbsp;# session) - it might exist on the server.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;unless ($item-&gt;{created}) {<br />
+&nbsp;&nbsp;my $metadata = $item-&gt;{metadata};<br />
+<br />
+&nbsp;&nbsp;# prepare actual HTTP headers for metadata<br />
+&nbsp;&nbsp;push(@headers, 'x-amz-auto-make-bucket', 1);<br />
+<br />
+&nbsp;&nbsp;# As metadata (most often 'collection' and 'subject') may have multiple<br />
+&nbsp;&nbsp;# values, %metadata has an array for each metadata name (in come case,<br />
+&nbsp;&nbsp;# notably 'title', may be a scalar). If there in fact multiple values,<br />
+&nbsp;&nbsp;# we use metadata header in indexed form. If there's only one value<br />
+&nbsp;&nbsp;# (either in an array or as a scalar), we use basic form. Special metadata<br />
+&nbsp;&nbsp;# 'collection' is also handled by this same logic.<br />
+&nbsp;&nbsp;while (my ($h, $v) = each %$metadata) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;push(@headers, metadataHeaders($h, $v));<br />
+&nbsp;&nbsp;}<br />
+<br />
+&nbsp;&nbsp;# add metadata headers for collections item gets associated with<br />
+&nbsp;&nbsp;my @collectionNames = map($_-&gt;{name}, @{$item-&gt;{collections}});<br />
+&nbsp;&nbsp;push(@headers, metadataHeaders('collection', \@collectionNames));<br />
+<br />
+&nbsp;&nbsp;# overwrite existing bucket unless user explicitly told not to.<br />
+&nbsp;&nbsp;unless ($keepExistingMetadata) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;push(@headers, 'x-archive-ignore-preexisting-bucket', '1');<br />
+&nbsp;&nbsp;}<br />
+<br />
+&nbsp;&nbsp;# size-hint<br />
+&nbsp;&nbsp;if ($item-&gt;{size}) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;push(@headers, 'x-archive-size-hint', $item-&gt;{size});<br />
+&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;# no-derive flag should go with all files<br />
+&nbsp;&nbsp;&nbsp;&nbsp;if ($noDerive) {<br />
+&nbsp;&nbsp;push(@headers, 'x-archive-queue-derive', '0');<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;# Expect header<br />
+&nbsp;&nbsp;&nbsp;&nbsp;push(@headers, 'expect', '100-continue');<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;my $uri = IAS3URLBASE . $uripath;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;my $content = $file-&gt;{path};<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;if ($verbose) {<br />
+&nbsp;&nbsp;print STDERR "PUT $uri\n";<br />
+&nbsp;&nbsp;for (my $i = 0; $i &lt; $#headers; $i += 2) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print STDERR $headers[$i], ":", $headers[$i + 1], "\n";<br />
+&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;if ($dryrun) {<br />
+&nbsp;&nbsp;print STDERR "## dry-run; not making actual request\n";<br />
+&nbsp;&nbsp;&nbsp;&nbsp;} else {<br />
+&nbsp;&nbsp;# use of custom PUT_FILE is for efficient handling of large files.<br />
+&nbsp;&nbsp;# see comment on PUT_FILE above.<br />
+&nbsp;&nbsp;my $req = PUT_FILE $uri, $content, @headers;<br />
+&nbsp;&nbsp;#print STDERR $req-&gt;as_string;<br />
+&nbsp;&nbsp;my $res = $ua-&gt;request($req);<br />
+&nbsp;&nbsp;print STDERR "\n";<br />
+&nbsp;&nbsp;if ($res-&gt;is_success) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print $res-&gt;status_line, "\n";<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$res-&gt;headers-&gt;scan(sub { print "$_[0]: $_[1]\n"; }) if $verbose;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print $res-&gt;content, "\n" if $verbose;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print "\n";<br />
+&nbsp;&nbsp;} else {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print $res-&gt;status_line, "\n", $res-&gt;content, "\n\n";<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if ($res-&gt;code == 503) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;# Service Unavailable - asking to slow down<br />
+&nbsp;&nbsp;&nbsp;&nbsp;$file-&gt;{waitUntil} = time() + 120;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;# put it at the head so that it blocks transfer<br />
+&nbsp;&nbsp;&nbsp;&nbsp;unshift(@uploadQueue, $file);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} elsif (++$file-&gt;{failCount} &lt; 5) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;$file-&gt;{waitUntil} = time() + 120;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;push(@uploadQueue, $file);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} else {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;# give up<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;next;<br />
+&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;$item-&gt;{created} = 1;<br />
+}
+				</div>
+			</div><!-- level4 -->
+		</div><!-- level3 -->
+
+		<div class="level3">
+		<h3><a name="otherlanguages"></a>Other Languages</h3>
+		<p>
+		Examples for additional languages are still pending. If you have any you would like to provide, please <a href="mailto:info@archive.org?subject=[IAS3 Code Example]">contact Internet Archive</a>.
+		</p>
+		</div><!-- level3 -->
+		</div><!-- level2 -->
+
+		<div class="level2">
+		<h2><a name="support"></a>Support</h2>
+		<p>
+		For assistance with the IAS3 API, please <a href="mailto:info@archive.org?subject=[IAS3 Help]">contact Internet Archive</a>. Please include the string "IAS3 Help" somewhere in the subject line.
+		</p>
+		</div><!-- level2 -->
+
+		<div class="level2">
+		<h2><a name="appendices"></a>Appendices</h2>
+
+		<div class="level3">
+		<h3><a name="terminology"></a>Terminology</h3>
+
+		<a name="defnbucket"></a><tt>Bucket</tt>
+		<dt>
+		'Bucket' is the Amazon S3 term for a container for your files. For the IAS3 API a bucket is equivalent to an Internet Archive <a href="#defnitem">item</a>.
+		</dt>
+
+		<a name="defncollection"></a><tt>Collection</tt>
+		<dt>
+		A collection is a specialized Internet Archive <a href="#defnitem">item</a> used for aggregating related collections and items. An item or collection is assigned to a collection via the <a href="metacollection">x-archive-meta-collection</a> metadata header.
+		</dt>
+
+		<a name="defnderivative"></a><tt>Derivative</tt>
+		<dt>
+		A derivative is a file which Internet Archive will automatically generate from the original file which you provide. Derivatives enable as many people as possible to access the file while also protecting against file format obsolescence. Please refer to <a href="http://www.archive.org/help/derivatives.php">this chart</a> to see which derivative formats Internet Archive will produce.
+		</dt>
+
+		<a name="defnidentifier"></a><tt>Identifier</tt>
+		<dt>
+		Each item at Internet Archive has a identifier. An identifier is composed of any unique combination of alphanumeric characters, underscore (_) and dash (-). While there are no official limits it is strongly suggested that they be between 5 and 80 characters in length. An identifier must be unique across the entirety of Internet Archive.
+		</dt>
+
+		<a name="defnitem"></a><tt>Item</tt>
+		<dt>
+		An item is the primary entity of the Internet Archive. All of the files you upload will be contained in items. Each item has its own Internet Archive page, also known as its <em>details</em> page. The details page can be accessed using the following URL pattern:
+		<div class="code codeblock">
+		http://archive.org/details/IDENTIFIER
+		</div>
+		</dt>
+		</div><!-- level3 -->
+
+		<div class="level3">
+		<h3><a name="itemstructure"></a>Internet Archive's Item Structure (in brief)</h3>
+		<p class="foo">
+		foo: Fill in this section
+		</p>
+		<p class="foo">
+		Items == have 'detail' pages ; metadata
+		</p>
+		<p class="foo">
+		Can be several files per items (http link)
+		</p>
+		<p class="foo">
+		For info on IA's item structure:<br />
+		http://www.archive.org/about/faqs.php<br />
+		(sorry!)<br />
+		You can also look at an item's structure directly by clicking the HTTP link shown on a details page. ex: http://archive.org/details/stats
+		</p>
+		</div><!-- level3 -->
+
+		<div class="level3">
+		<h3><a name="ias3httpreturncodes"></a>IAS3 HTTP Return Codes</h3>
+		<p>
+		The IAS3 API may return the following HTTP Return Codes:
+		</p>
+		<div class="code codeblock">
+			<table border="0">
+				<tr>
+					<th>HTTP Return Code</th>
+					<th>Code Meaning</th>
+				</tr>
+				<tr>
+					<td>102</td><td>Processing</td>
+				</tr>
+				<tr>
+					<td>200</td><td>Ok</td>
+				</tr>
+				<tr>
+					<td>201</td><td>Created</td>
+				</tr>
+				<tr>
+        	<td>204</td><td>No Content</td>
+				</tr>
+				<tr>
+					<td>207</td><td>Multi-Status</td>
+				</tr>
+				<tr>
+					<td>400</td><td>Bad Request</td>
+				</tr>
+				<tr>
+					<td>403</td><td>Forbidden</td>
+				</tr>
+				<tr>
+					<td>404</td><td>Not Found</td>
+				</tr>
+				<tr>
+					<td>405</td><td>Method Not Allowed</td>
+				</tr>
+				<tr>
+					<td>409</td><td>Conflict</td>
+				</tr>
+				<tr>
+					<td>412</td><td>Precondition failed</td>
+				</tr>
+				<tr>
+					<td>415</td><td>Unsupported Media Type</td>
+				</tr>
+				<tr>
+					<td>422</td><td>Unprocessable Entity</td>
+				</tr>
+				<tr>
+					<td>423</td><td>Locked</td>
+				</tr>
+				<tr>
+					<td>424</td><td>Failed Dependency</td>
+				</tr>
+				<tr>
+					<td>502</td><td>Bad Gateway</td>
+				</tr>
+				<tr>
+					<td>507</td><td>Insufficient Storage</td>
+				</tr>
+			</table>
+		</div>
+		</div><!-- level3 -->
+
+		<div class="level3">
+		<h3><a name="errormessages"></a>Error Messages</h3>
+		<p>
+		IAS3 may return the following error messages:
+		</p>
+		<div class="code codeblock">
+<table border="0" cellpadding="2">
+<tr>
+	<th>Error Code</th>
+	<th>Error Message</th>
+	<th>HTTP Code Returned</th>
+</tr>
+<tr>
+  <td>AccessDenied</td>
+  <td>Access Denied</td>
+  <td>403 Forbidden</td>
+</tr>
+<tr>
+  <td>AccountProblem</td>
+  <td>There is a problem with your AWS account that prevents the operation from completing successfully. Please contact customer service at webservices@amazon.com.</td>
+  <td>403 Forbidden</td>
+</tr>
+<tr>
+  <td>AmbiguousGrantByEmailAddress</td>
+  <td>The e-mail address you provided is associated with more than one account.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>BadDigest</td>
+  <td>The Content-MD5 you specified did not match what we received.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>BucketAlreadyExists</td>
+  <td>The requested bucket name is not available. The bucket namespace is shared by all users of the system. Please select a different name and try again.</td>
+  <td>409 Conflict</td>
+</tr>
+<tr>
+  <td>BucketAlreadyOwnedByYou</td>
+  <td>Your previous request to create the named bucket succeeded and you already own it.</td>
+  <td>409 Conflict</td>
+</tr>
+<tr>
+  <td>BucketNotEmpty</td>
+  <td>The bucket you tried to delete is not empty.</td>
+  <td>409 Conflict</td>
+</tr>
+<tr>
+  <td>CredentialsNotSupported</td>
+  <td>This request does not support credentials.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>CrossLocationLoggingProhibited</td>
+  <td>Cross location logging not allowed. Buckets in one geographic location cannot log information to a bucket in another location.</td>
+  <td>403 Forbidden</td>
+</tr>
+<tr>
+  <td>EntityTooSmall</td>
+  <td>Your proposed upload is smaller than the minimum allowed object size.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>EntityTooLarge</td>
+  <td>Your proposed upload exceeds the maximum allowed object size.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>ExpiredToken</td>
+  <td>The provided token has expired.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>IncompleteBody</td>
+  <td>You did not provide the number of bytes specified by the Content-Length HTTP header</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>IncorrectNumberOfFilesInPostRequest</td>
+  <td>POST requires exactly one file upload per request.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>InlineDataTooLarge</td>
+  <td>Inline data exceeds the maximum allowed size.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>InternalError</td>
+  <td>We encountered an internal error. Please try again.</td>
+  <td>500 Internal Server Error</td>
+</tr>
+<tr>
+  <td>InvalidAccessKeyId</td>
+  <td>The AWS Access Key Id you provided does not exist in our records.</td>
+  <td>403 Forbidden</td>
+</tr>
+<tr>
+  <td>InvalidAddressingHeader</td>
+  <td>You must specify the Anonymous role.</td>
+  <td>N/A</td>
+</tr>
+<tr>
+  <td>InvalidArgument</td>
+  <td>Invalid Argument</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>InvalidBucketName</td>
+  <td>The specified bucket is not valid.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>InvalidDigest</td>
+  <td>The Content-MD5 you specified was an invalid.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>InvalidLocationConstraint</td>
+  <td>The specified location constraint is not valid.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>InvalidPayer</td>
+  <td>All access to this object has been disabled.</td>
+  <td>403 Forbidden</td>
+</tr>
+<tr>
+  <td>InvalidPolicyDocument</td>
+  <td>The content of the form does not meet the conditions specified in the policy document.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>InvalidRange</td>
+  <td>The requested range cannot be satisfied.</td>
+  <td>416 Requested Range Not Satisfiable</td>
+</tr>
+<tr>
+  <td>InvalidSecurity</td>
+  <td>The provided security credentials are not valid.</td>
+  <td>403 Forbidden</td>
+</tr>
+<tr>
+  <td>InvalidSOAPRequest</td>
+  <td>The SOAP request body is invalid.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>InvalidStorageClass</td>
+  <td>The storage class you specified is not valid.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>InvalidTargetBucketForLogging</td>
+  <td>The target bucket for logging does not exist, is not owned by you, or does not have the appropriate grants for the log-delivery group. </td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>InvalidToken</td>
+  <td>The provided token is malformed or otherwise invalid.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>InvalidURI</td>
+  <td>Couldn't parse the specified URI.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>KeyTooLong</td>
+  <td>Your key is too long.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>MalformedACLError</td>
+  <td>The XML you provided was not well-formed or did not validate against our published schema.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>MalformedPOSTRequest </td>
+  <td>The body of your POST request is not well-formed multipart/form-data.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>MaxMessageLengthExceeded</td>
+  <td>Your request was too big.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>MaxPostPreDataLengthExceededError</td>
+  <td>Your POST request fields preceding the upload file were too large.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>MetadataTooLarge</td>
+  <td>Your metadata headers exceed the maximum allowed metadata size.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>MethodNotAllowed</td>
+  <td>The specified method is not allowed against this resource.</td>
+  <td>405 Method Not Allowed</td>
+</tr>
+<tr>
+  <td>MissingAttachment</td>
+  <td>A SOAP attachment was expected, but none were found.</td>
+  <td>N/A</td>
+</tr>
+<tr>
+  <td>MissingContentLength</td>
+  <td>You must provide the Content-Length HTTP header.</td>
+  <td>411 Length Required</td>
+</tr>
+<tr>
+  <td>MissingSecurityElement</td>
+  <td>The SOAP 1.1 request is missing a security element.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>MissingSecurityHeader</td>
+  <td>Your request was missing a required header.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>NoLoggingStatusForKey</td>
+  <td>There is no such thing as a logging status sub-resource for a key.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>NoSuchBucket</td>
+  <td>The specified bucket does not exist.</td>
+  <td>404 Not Found</td>
+</tr>
+<tr>
+  <td>NoSuchKey</td>
+  <td>The specified key does not exist.</td>
+  <td>404 Not Found</td>
+</tr>
+<tr>
+  <td>NotImplemented</td>
+  <td>A header you provided implies functionality that is not implemented.</td>
+  <td>501 Not Implemented</td>
+</tr>
+<tr>
+  <td>NotSignedUp</td>
+  <td>Your account is not signed up for the Amazon S3 service. You must sign up before you can use Amazon S3. You can sign up at the following URL: http://aws.amazon.com/s3</td>
+  <td>403 Forbidden</td>
+</tr>
+<tr>
+  <td>OperationAborted</td>
+  <td>A conflicting conditional operation is currently in progress against this resource. Please try again.</td>
+  <td>409 Conflict</td>
+</tr>
+<tr>
+  <td>PermanentRedirect</td>
+  <td>The bucket you are attempting to access must be addressed using the specified endpoint. Please send all future requests to this endpoint.</td>
+  <td>301 Moved Permanently</td>
+</tr>
+<tr>
+  <td>PreconditionFailed</td>
+  <td>At least one of the pre-conditions you specified did not hold.</td>
+  <td>412 Precondition Failed</td>
+</tr>
+<tr>
+  <td>Redirect</td>
+  <td>Temporary redirect.</td>
+  <td>307 Moved Temporarily</td>
+</tr>
+<tr>
+  <td>RequestIsNotMultiPartContent</td>
+  <td>Bucket POST must be of the enclosure-type multipart/form-data.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>RequestTimeout</td>
+  <td>Your socket connection to the server was not read from or written to within the timeout period.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>RequestTimeTooSkewed</td>
+  <td>The difference between the request time and the server's time is too large.</td>
+  <td>403 Forbidden</td>
+</tr>
+<tr>
+  <td>RequestTorrentOfBucketError</td>
+  <td>Requesting the torrent file of a bucket is not permitted.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>SignatureDoesNotMatch</td>
+  <td>The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method. For more information, see Authenticating REST Requests and Authenticating SOAP Requests for details.</td>
+  <td>403 Forbidden</td>
+</tr>
+<tr>
+  <td>SlowDown</td>
+  <td>Please reduce your request rate.</td>
+  <td>503 Service Unavailable</td>
+</tr>
+<tr>
+  <td>TemporaryRedirect</td>
+  <td>You are being redirected to the bucket while DNS updates.</td>
+  <td>307 Moved Temporarily</td>
+</tr>
+<tr>
+  <td>TokenRefreshRequired</td>
+  <td>The provided token must be refreshed.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>TooManyBuckets</td>
+  <td>You have attempted to create more buckets than allowed.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>UnexpectedContent</td>
+  <td>This request does not support content.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>UnresolvableGrantByEmailAddress</td>
+  <td>The e-mail address you provided does not match any account on record.</td>
+  <td>400 Bad Request</td>
+</tr>
+<tr>
+  <td>UserKeyMustBeSpecified</td>
+  <td>The bucket POST must contain the specified field name. If it is specified, please check the order of the fields.</td>
+  <td>400 Bad Request</td>
+</tr>
+</table>
+		</div>
+		</div><!-- level3 -->
+
+		<div class="level3">
+		<h3><a name="defaultmetadatavalues"></a>Default Metadata Values</h3>
+		<p>
+		Several metadata fields will receive default values if none is specified at item creation time:
+		</p>
+		<div class="code codeblock">
+			<table border="0" cellpadding="2">
+				<tr>
+					<th>Field</th>
+					<th>Default Value</th>
+				</tr>
+				<tr>
+					<td>uploader</td>
+					<td>The username of the Internet Archive patron used to create the item.</td>
+				</tr>
+				<tr>
+					<td>mediatype</td>
+					<td>data</td>
+				</tr>
+				<tr>
+					<td>collection</td>
+					<td>opensource</td>
+				</tr>
+				<tr>
+					<td>title</td>
+					<td>The identifier specified for the item.</td>
+				</tr>
+				<tr>
+					<td>addeddate</td>
+					<td>The current date and time formatted as YYYY-mm-dd hh:mm:ss</td>
+				</tr>
+				<tr>
+					<td>publicdate</td>
+					<td>The current date and time formatted as YYYY-mm-dd hh:mm:ss</td>
+				</tr>
+			</table>
+		</div>
+		<p>
+		Other metadata fields will not be added to the item unless explicitly specifed.
+		</p>
+		</div><!-- level3 -->
+
+		<div class="level3">
+		<h3><a name="examplemarcxml"></a>Example IDENTIFIER_marc.xml file</h3>
+		<p>
+		The <span class="code">japanesefairytal00ozak_marc.xml</span> file for <a href="http://www.archive.org/details/japanesefairytal00ozak">Japanese Fairy Tales</a>:
+		</p>
+		<div class="code codeblock">
+			&lt;record xmlns="http://www.loc.gov/MARC21/slim"&gt;<br />
+			&nbsp;&nbsp;&lt;leader&gt;00871nam a2200253 4500&lt;/leader&gt;<br />
+			&nbsp;&nbsp;&lt;controlfield tag="001"&gt;ocm15627400&lt;/controlfield&gt;<br />
+			&nbsp;&nbsp;&lt;controlfield tag="005"&gt;20060625113632.0&lt;/controlfield&gt;<br />
+			&nbsp;&nbsp;&lt;controlfield tag="008"&gt;900121s1903 nyua j 000 0 eng d&lt;/controlfield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="035" ind1="" ind2=""&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;902182803&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="040" ind1="" ind2=""&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;CLO&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="c"&gt;CLO&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="d"&gt;m/c&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="d"&gt;BNY&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="d"&gt;UtOrBLW&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="041" ind1="1" ind2=""&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;engeng&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="043" ind1="" ind2=""&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;a-ja---&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="091" ind1="" ind2=""&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="p"&gt;J&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;398&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="c"&gt;O&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="245" ind1="0" ind2="0"&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;Japanese fairy tales /&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="c"&gt;compiled by Yei Theodora Ozaki ; profusely<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;illustrated by Japanese artists.&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="260" ind1="" ind2=""&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;New York :&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="b"&gt;Grosset &amp; Dunlap,&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="c"&gt;[preface 1903]&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="300" ind1="" ind2=""&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;vii, 305 p., [1] leaf of plates :&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="b"&gt;ill. ;&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="c"&gt;22 cm.&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="590" ind1="" ind2=""&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;NY3&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="650" ind1="" ind2="0"&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;Fairy tales&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="z"&gt;Japan.&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="650" ind1="" ind2="0"&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;Folklore&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="z"&gt;Japan.&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="700" ind1="1" ind2=""&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;Ozaki, Yei Theodora.&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="923" ind1="" ind2=""&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;j&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="995" ind1="" ind2=""&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;59521&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="920" ind1="" ind2=""&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;Donnell Library Center&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="b"&gt;J 398 O&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="c"&gt;checked Out&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="d"&gt;Children's Room Stacks&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="r"&gt;A&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="z"&gt;DLC&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&nbsp;&nbsp;&lt;datafield tag="920" ind1="" ind2=""&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="a"&gt;96th Street Branch&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="b"&gt;J 398 O&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="c"&gt;checked In&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="d"&gt;CR Reading Room Collection&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="r"&gt;A&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&lt;subfield code="z"&gt;NSR&lt;/subfield&gt;<br />
+			&nbsp;&nbsp;&lt;/datafield&gt;<br />
+			&lt;/record&gt;<br />
+		</div>
+		<p>
+		The original file may be <a href="http://ia600308.us.archive.org/27/items/japanesefairytal00ozak/japanesefairytal00ozak_marc.xml">viewed here</a>.
+		</p>
+		</div><!-- level3 -->
+
+		<div class="level3">
+		<h3><a name="examplemrcfile"></a>Example IDENTIFIER_meta.mrc file</h3>
+		<p>
+		The <span class="code">japanesefairytal00ozak_meta.mrc</span> file for <a href="http://www.archive.org/details/japanesefairytal00ozak">Japanese Fairy Tales</a> <em>(line breaks added and control characters converted to ASCII representations for readability)</em>:
+		</p>
+		<div class="code codeblock">
+00871nam&nbsp;&nbsp;2200253&nbsp;&nbsp;&nbsp;450000100130000000500170001300800410003003500140007104000320008504<br />
+1001100117043001200128091001400140245010400154260005000258300005400308590000800362650<br />
+002400370650002100394700002500415923000600440995001000446920008100456920008000537^^oc<br />
+m15627400&nbsp;^^20060625113632.0^^900121s1903&nbsp;&nbsp;&nbsp;&nbsp;nyua&nbsp;&nbsp;&nbsp;j&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;000&nbsp;0&nbsp;eng&nbsp;d^^&nbsp;&nbsp;^_a90218280<br />
+3^^&nbsp;&nbsp;^_aCLO^_cCLO^_dm/c^_dBNY^_dUtOrBLW^^&nbsp;^_aengeng^^&nbsp;&nbsp;^_aa-ja---^^&nbsp;&nbsp;^_pJ^_a398^_cO^^<br />
+0^_aJapanese&nbsp;fairy&nbsp;tales&nbsp;/^_ccompiled&nbsp;by&nbsp;Yei&nbsp;Theodora&nbsp;Ozaki&nbsp;;&nbsp;profusely&nbsp;illustrated&nbsp;b<br />
+y&nbsp;Japanese&nbsp;artists.^^&nbsp;&nbsp;^_aNew&nbsp;York&nbsp;:^_bGrosset&nbsp;&amp;&nbsp;Dunlap,^_c[preface&nbsp;1903]^^&nbsp;&nbsp;^_avii,&nbsp;<br />
+305&nbsp;p.,&nbsp;[1]&nbsp;leaf&nbsp;of&nbsp;plates&nbsp;:^_bill.&nbsp;;^_c22&nbsp;cm.^^&nbsp;&nbsp;^_aNY3^^&nbsp;0^_aFairy&nbsp;tales^_zJapan.^^<br />
+&nbsp;0^_aFolklore^_zJapan.^^1&nbsp;^_aOzaki,&nbsp;Yei&nbsp;Theodora.^^&nbsp;&nbsp;^_aj^^&nbsp;&nbsp;^_a59521^^&nbsp;&nbsp;^_aDonnell&nbsp;L<br />
+ibrary&nbsp;Center^_bJ&nbsp;398&nbsp;O^_cchecked&nbsp;Out^_dChildren's&nbsp;Room&nbsp;Stacks^_rA^_zDLC^^&nbsp;&nbsp;^_a96th&nbsp;S<br />
+treet&nbsp;Branch^_bJ&nbsp;398&nbsp;O^_cchecked&nbsp;In^_dCR&nbsp;Reading&nbsp;Room&nbsp;Collection^_rA^_zNSR^^^]
+		</div>
+		<p>
+		The original file may be <a href="http://ia600308.us.archive.org/27/items/japanesefairytal00ozak/japanesefairytal00ozak_meta.mrc">viewed here</a>.
+		</p>
+		</div><!-- level3 -->
+		</div><!-- level2 -->
+
+	</body>
+</html>
