@@ -4,11 +4,10 @@ This document covers the technical details of using Internet Archive's S3-like s
 
 This document is a work in progress. Please use it in conjunction with the [official IAS3 documentation](http://archive.org/help/abouts3.txt">http://archive.org/help/abouts3.txt).
 
-Because the initial writing and research for this documentation occurred in 2011, it is possible (likely) there are errors in it. This document is not created or maintained by [Internet Archive](http://archive.org). Please do not contact them for problems with this document. Instead, please [file a Github issue](https://github.com/vmbrasseur/IAS3API/issues).
-
 ## Contents
 
 * [Introduction](./introduction.md)
+* [Getting Support for This Documentation](./SUPPORT.md)
 * [Quick Start](./quickstart.md) _pending_
 * [System Requirements](./systemrequirements.md)
 * [Compatibility with Amazon S3](./compatibility.md)
