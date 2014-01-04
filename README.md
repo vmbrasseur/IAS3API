@@ -2,7 +2,7 @@
 
 This document covers the technical details of using Internet Archive's S3-like server API, aka "IAS3." The intended audience is a technical user, ideally one who is comfortable in the Linux/UNIX command line environment.
 
-This document is a work in progress. Please use it in conjunction with the [official IAS3 documentation](http://archive.org/help/abouts3.txt">http://archive.org/help/abouts3.txt).
+This document is an independent work and is not written or supported by [Internet Archive](http://archive.org). Please use it in conjunction with the [official IAS3 documentation](http://archive.org/help/abouts3.txt">http://archive.org/help/abouts3.txt). See the [support page](./SUPPORT.md) for more information about receiving support for this document and IAS3.
 
 ## Contents
 
