@@ -9,12 +9,12 @@ Because the initial writing and research for this documentation occurred in 2011
 ## Contents
 
 * [Introduction](./introduction.md)
-* [Quick Start](./quickstart.md)
+* [Quick Start](./quickstart.md) _pending_
 * [System Requirements](./systemrequirements.md)
 * [Compatibility with Amazon S3](./compatibility.md)
 * [Passing Authorization Credentials to IAS3](./authcredentials.md)
 * [Identifiers](./identifiers.md)
-* [Anatomy of an IAS3 Request](./requestanatomy.md)
+* [Anatomy of an IAS3 Request](./requestanatomy.md) _pending_
 * [Headers](./headers.md)
 * [Metadata](./metadata.md)
 * [Setting Metadata Values via Files](./metadatafiles.md)
@@ -24,7 +24,7 @@ Because the initial writing and research for this documentation occurred in 2011
 * [Code Examples](./examples/README.md)
 * Appendices
     * [Terminology](./appendices/terminology.md)
-    * [An intro to Internet Archive item structure](./appendices/itemstructure.md)
+    * [An intro to Internet Archive item structure](./appendices/itemstructure.md) _pending_
     * [IAS3 HTTP Return Codes](./appendices/returncodes.md)
     * [IAS3 Error Messages](./appendices/errormessages.md)
     * [Default metadata values](./appendices/defaultmetadatavalues.md)
