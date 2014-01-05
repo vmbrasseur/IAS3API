@@ -16,6 +16,8 @@ While it's certainly not required, it's helpful if your issue includes:
 * The quoted portion of the page which needs altering
 * A description of how it needs to be updated
 
+Also, it would help if you checked the list of [existing issues](http://github.com/vmbrasseur/IAS3API/issues). It could be someone has already reported the thing you're seeing. If you don't have time to check, don't worry! We'd still like to hear what you have to say, even if you end up opening a duplicate issue. :-)
+
 If you came to the page with an expectation ("I thought this would answer question X") which wasn't fulfilled, please let us know in the issue. We'd like this documentation to answer as many questions and meet or exceed all expectations.
 
 # Sending a Pull Request
