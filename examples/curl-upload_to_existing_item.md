@@ -4,6 +4,8 @@ This [curl](http://curl.haxx.se/) command can be run at the command line. It wil
 
 1. Upload the file `demo-intro-to-k.pdf` to the existing item `sam-s3-text-08`
 
+-----
+
     curl --location \
         --header "authorization: LOW $accesskey:$secret" \
         --upload-file /home/samuel/public_html/intro-to-k.pdf \

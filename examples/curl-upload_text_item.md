@@ -6,6 +6,8 @@ This [curl](http://curl.haxx.se/) command can be run at the command line. It wil
 1. Assign the item to the 'text' mediatype, meaning it will be displayed with an online ebook reader
 1. Upload the file `demo-intro-to-k.pdf` to the item
 
+-----
+
     curl --location --header 'x-amz-auto-make-bucket:1' \
         --header 'x-archive-meta01-collection:opensource' \
         --header 'x-archive-meta-mediatype:texts' \
