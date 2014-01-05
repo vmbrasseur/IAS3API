@@ -6,6 +6,8 @@ This [curl](<http://curl.haxx.se/) command can be run at the command line. It wi
 1. Assign the item to the 'movies' mediatype, meaning it will be displayed with an online video player
 1. Assign values to the collection, title, creator, description, data, year, subject, and licence URL metadata fields
 
+-----
+
     curl --location --header 'x-archive-ignore-preexisting-bucket:1' \
         --header "authorization: LOW $accesskey:$secret" \
         --header 'x-archive-meta-mediatype:movies' \
