@@ -4,6 +4,8 @@ The initial version of this document was researched and written by [VM Brasseur]
 
 This project welcomes all contributions, be that a pull request or an issue report. We value any time you put toward the project.
 
+If you contribute in **any** way, please add yourself to the [contributors file](./contributors.md). And if you don't do it, we'll do it for you. ;-) (which is to say: please let us know if you'd like **not** to be included in this list)
+
 # Opening Issues
 
 If you find a problem with the documentation, or you have an idea on how to make it better in some way, please [open a Github issue](https://github.com/vmbrasseur/IAS3API/issues).
