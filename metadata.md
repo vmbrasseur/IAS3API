@@ -207,7 +207,7 @@ While it is possible to set the `uploader` metadata value it is not recommended.
 
 ### Custom Metadata Fields
 
-Internet Archive strives to be metadata agnostic, enabling users to define the metadata format which best suits the needs of their material. In addition to the standard metadata fields listed above you may also define as many custom metadata fields as you require. These metadata fields can be defined ad hoc at item creation or metadata editing time and do not have to be defined in advance. For instance, if your organization uses the [PBCORE](http://www.pbcore.utah.edu/PBCore/UserGuide.html) metadata schema you can include the appropriate metadata fields in your Internet Archive item:
+Internet Archive strives to be metadata agnostic, enabling users to define the metadata format which best suits the needs of their material. In addition to the standard metadata fields listed above you may also define as many custom metadata fields as you require. These metadata fields can be defined ad hoc at item creation or metadata editing time and do not have to be defined in advance. For instance, if your organization uses the [PBCORE](http://pbcore.org/index.php) metadata schema you can include the appropriate metadata fields in your Internet Archive item:
 
     x-archive-meta-pbcoreGenre:Educational
     x-archive-meta-pbcoreCoverage:"Long Beach, CA"
