@@ -2,9 +2,9 @@
 
 This [curl](http://curl.haxx.se/) command can be run at the command line. It will do the following things:
 
-1. Create a new item (aka bucket) on Internet Archive with the identifier 'sam-s3-text-08'
+1. Create a new item (aka bucket) on Internet Archive with the identifier `sam-s3-text-08`
 1. Assign the item to the 'text' mediatype, meaning it will be displayed with an online ebook reader
-1. Upload the file 'demo-intro-to-k.pdf' to the item
+1. Upload the file `demo-intro-to-k.pdf` to the item
 
     curl --location --header 'x-amz-auto-make-bucket:1' \
         --header 'x-archive-meta01-collection:opensource' \
