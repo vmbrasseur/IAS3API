@@ -21,3 +21,8 @@ Line breaks added for online readability. You can view the unaltered file [on In
     aDonnell Library CenterbJ 398 Occhecked OutdChildren's 
     Room StacksrAzDLC  a96th Street BranchbJ 398 Occhec
     ked IndCR Reading Room CollectionrAzNSR
+
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

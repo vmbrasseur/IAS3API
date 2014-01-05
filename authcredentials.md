@@ -7,3 +7,8 @@ In addition there is a clear text password mode. To use this mode, pass your acc
     Authorization: LOW $accesskey:$secret
 
 This is the authorization method shown in most of the examples in this document but it is **not** recommended for production code. Clear text passwords are an immense security risk.
+
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

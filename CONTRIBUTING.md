@@ -33,3 +33,8 @@ While it's certainly not required, we'd love it if you took the following in min
 * All files are currently encoded with the US-ASCII character set. Some day we probably should move this to UTF-8, but until that point ASCII's the way we'll go.
 * Tabs are converted to space characters.
 * How many spaces? 4. Four-space tabs.
+
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

@@ -85,3 +85,7 @@ If this header is not defined IAS3 will attempt to default to the value in the `
 
 This header works only when PUTting to IAS3.
 
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

@@ -70,3 +70,8 @@ A new or modified `IDENTIFIER_rules.conf` file will not be recognized until a ne
  1. Click the "derive" button
 
 If now-excluded formats had previously been derived, initiating a derive process will remove the files from the item.
+
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

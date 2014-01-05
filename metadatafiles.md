@@ -30,3 +30,8 @@ The `IDENTIFIER_marc.xml` file is used to generate a `IDENTIFIER_dc.xml` file of
 * `010` subfield `a` is searched for the LCCN.
 
 The item's definitive metadata file, `IDENTIFIER_meta.xml` is generated from the `IDENTIFIER_dc.xml` Dublin Core file.
+
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

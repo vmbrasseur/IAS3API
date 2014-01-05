@@ -30,3 +30,8 @@ The documentation for the Metadata API is available in [this blog post](http://b
 Each item on Internet Archive automatically receives a [torrent file](http://en.wikipedia.org/wiki/Torrent_file) which can be used–in conjunction with a [BitTorrent client](http://en.wikipedia.org/wiki/Comparison_of_BitTorrent_clients) to download all of the files in an item.
 
 The link to the torrent file is located in the left side bar of the item's details page. 
+
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

@@ -219,3 +219,8 @@ Internet Archive strives to be metadata agnostic, enabling users to define the m
     x-archive-meta-isbn--10:080652510X
 
 This example will generate a metadata field named `isbn_10`.
+
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

@@ -37,3 +37,8 @@ You may also reach this page by clicking the 'Item History' link on the item's d
 ### Is there any way to control how files derive?
 
 You may use either the [`IDENTIFIER_rules.conf`](./specialfiles.md) file or the [`x-archive-queue-derive`](./headers.md) header to control the creation of [derivative files](http://www.archive.org/help/derivatives.php) from your originals.
+
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

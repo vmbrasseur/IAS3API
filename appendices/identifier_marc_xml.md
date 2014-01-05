@@ -85,3 +85,8 @@ You can view this file [on Internet Archive](https://ia600308.us.archive.org/27/
             <subfield code="z">NSR</subfield>
         </datafield>
     </record>
+
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

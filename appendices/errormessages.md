@@ -68,3 +68,7 @@ IAS3 may return the following error messages:
 | UnresolvableGrantByEmailAddress | The e-mail address you provided does not match any account on record. | 400 Bad Request |
 | UserKeyMustBeSpecified | The bucket POST must contain the specified field name. If it is specified, please check the order of the fields. | 400 Bad Request |
 
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

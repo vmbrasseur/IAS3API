@@ -13,3 +13,7 @@ Several metadata fields will receive default values if none is specified at item
 
 Other metadata fields will not be added to the item unless explicitly specifed.
 
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

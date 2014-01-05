@@ -21,3 +21,8 @@ The IAS3 API may return the following HTTP Return Codes:
 | 424 | Failed Dependency |
 | 502 | Bad Gateway |
 | 507 | Insufficient Storage |
+
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

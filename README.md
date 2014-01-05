@@ -30,3 +30,9 @@ This document is an independent work and is not written or supported by [Interne
     * [Example IDENTIFIER_marc.xml file](./appendices/identifier_marc_xml.md)
     * [Example IDENTIFIER_meta.mrc file](./appendices/identifier_meta_mrc.md)
     * [Other Internet Archive tools](./appendices/othertools.md)
+
+
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

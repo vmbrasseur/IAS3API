@@ -27,3 +27,8 @@ An identifier must be unique across the entirety of Internet Archive.
 An item is the primary entity of the Internet Archive. All of the files you upload will be contained in items. Each item has its own Internet Archive page, also known as its _details_ page. The details page can be accessed using the following URL pattern:
 
     http://archive.org/details/IDENTIFIER
+
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

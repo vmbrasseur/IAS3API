@@ -15,3 +15,8 @@ For instance, adding the following to your `~/.s3cfg` configuration file for [s3
 		host_bucket = %(bucket)s.s3.us.archive.org
 
 The `access_key` and `secret_key` are available on [your Internet Archive patron record](http://www.archive.org/account/s3.php).
+
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+

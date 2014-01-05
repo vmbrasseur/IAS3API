@@ -17,3 +17,8 @@ In IAS3, identifiers are defined implicitly in the target URL. For example:
 The identifier in this command is `vmb_tosw_trial_upload_03`. The item may be viewed at its _details_ page. The details page for any item is simply `http://archive.org/details/` followed by the identifier. The details page for this example is:
 
     http://archive.org/details/vmb_tosw_trial_upload_03
+
+-----
+
+_Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
+
