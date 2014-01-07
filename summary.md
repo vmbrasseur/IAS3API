@@ -14,23 +14,23 @@ Internet Archive welcomes **all digital contributions** and will store, serve, a
 
 ### FAQs
 
-**Q**: What can I upload to Internet Archive using this API?
-**A**: Internet Archive is accepts all data. However, if the data is under current copyright the Archive reserves the right to remove it.
+**What can I upload to Internet Archive using this API?**
+> Internet Archive is accepts all data. However, if the data is under current copyright the Archive reserves the right to remove it.
 
-**Q**: What file types can I upload to Internet Archive?
-**A**: Internet Archive accepts all digital files. Certain files will receive an online viewer (video, audio, text) if the item which contains them has the appropriate metadata values. Files which are not of the correct type to be receive an online viewer will still be saved and available for download on the Archive. Please see the [mediatype](./metadata.md#mediatype) metadata field for more information.
+**What file types can I upload to Internet Archive?**
+> Internet Archive accepts all digital files. Certain files will receive an online viewer (video, audio, text) if the item which contains them has the appropriate metadata values. Files which are not of the correct type to be receive an online viewer will still be saved and available for download on the Archive. Please see the [mediatype](./metadata.md#mediatype) metadata field for more information.
 
-**Q**: How much data can I upload to Internet Archive?
-**A**: How much do you have? There is no real limit. However, if you have a very large amount of data you wish to upload, please [contact the Archive](mailto:info@archive.org) and coordinate with them to be sure everything goes smoothly.
+**How much data can I upload to Internet Archive?**
+> How much do you have? There is no real limit. However, if you have a very large amount of data you wish to upload, please [contact the Archive](mailto:info@archive.org) and coordinate with them to be sure everything goes smoothly.
 
-**Q**: What sort of metadata format does Internet Archive support?
-**A**: Internet Archive is metadata agnostic. You may use whatever metadata format best suits you and your organization. See the [metadata](./metadata.md) document for more information.
+**What sort of metadata format does Internet Archive support?**
+> Internet Archive is metadata agnostic. You may use whatever metadata format best suits you and your organization. See the [metadata](./metadata.md) document for more information.
 
-**Q**: Will my files be publicly available?
-**A**: Yes. The Archive's mission is "universal access to all knowledge." Any file you upload to the Archive will be available to everyone who can access Internet Archive.
+**Will my files be publicly available?**
+> Yes. The Archive's mission is "universal access to all knowledge." Any file you upload to the Archive will be available to everyone who can access Internet Archive.
 
-**Q**: Can I organize the items I create on Internet Archive?
-**A**: Items can be organized within [collections](./metadata.md#collection). A collection is a specialized item used for curation and aggregation of other items. Currently collections can only be created by Internet Archive staff members. Please [contact Internet Archive](mailto:info@archive.org) if you need a collection created.
+**Can I organize the items I create on Internet Archive?**
+> Items can be organized within [collections](./metadata.md#collection). A collection is a specialized item used for curation and aggregation of other items. Currently collections can only be created by Internet Archive staff members. Please [contact Internet Archive](mailto:info@archive.org) if you need a collection created.
 
 -----
 
