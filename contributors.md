@@ -4,3 +4,4 @@ If your name isn't on this list yet, please contact [the project coordinator](ht
 
 [VM Brasseur](http://vmbrasseur.com)
 [TardisPackrat](http://github.com/tardispackrat): Editing & proofreading
+[gwern](https://twitter.com/gwern): Reporting Issue #15
