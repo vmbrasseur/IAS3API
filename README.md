@@ -7,6 +7,7 @@ This document is an independent work and is not written or supported by [Interne
 ## Contents
 
 * [Introduction](./introduction.md)
+* [Summary of API Functionality and FAQs](summary.md)
 * [Getting Support for This Documentation](./SUPPORT.md)
 * [Quick Start](./quickstart.md) _pending_
 * [System Requirements](./systemrequirements.md)
