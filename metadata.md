@@ -64,9 +64,9 @@ While is is possible to set the `adder` metadata value it is not recommended. Th
 
 #### collection
 
-A collection is a specialized item used for curation and aggregation of other items. Assigning an item to a collection defines where the item may be located by a user browsing Internet Archive. To assign an item to a collection, pass its identifier as the value for an `x-archive-metadata-collection` header. For example, if you are using curl you can assign an item to the _Community Texts_ collection (identifier: _opensource_) with the following header:
+A collection is a specialized item used for curation and aggregation of other items. Assigning an item to a collection defines where the item may be located by a user browsing Internet Archive. To assign an item to a collection, pass its identifier as the value for an `x-archive-meta-collection` header. For example, if you are using curl you can assign an item to the _Community Texts_ collection (identifier: _opensource_) with the following header:
 
-    --header 'x-archive-metadata-collection:opensource'
+    --header 'x-archive-meta-collection:opensource'
 
 A collection **must** exist prior to assigning any items to it. Currently collections can only be created by Internet Archive staff members. Please [contact Internet Archive](mailto:info@archive.org?subject=[Collection Creation Request]) if you need a collection created.
 
