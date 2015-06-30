@@ -5,7 +5,7 @@ This API allows people and institutions to create [items](./appendices/terminolo
 [Internet Archive](http://archive.org)–best known as the home of the [Wayback Machine](https://archive.org/web/)–is also home to over 10 [petabytes](http://en.wikipedia.org/wiki/Petabyte) of data. The Wayback Machine is only a fraction of that. Some of the other many collections available at the Archive include:
 
 * [Live Music Archive](https://archive.org/details/etree), where you can find over 10,000 recordings of live performances by a plethora of bands
-* [OpenLibrary](https://openlibrary.org/), where you can check out and view millions of free ebooks
+* [OpenLibrary](https://openlibrary.org/), where you can borrow and view millions of free ebooks
 * [Prelinger Archives](https://archive.org/details/prelinger), a priceless collection of over 60,000 ephemeral films
 * [TV News](https://archive.org/details/tv), a searchable archive of TV news programs from 2001 through the present and an invaluable tool for researchers and historians
 * [Historical Software Collection](https://archive.org/details/historicalsoftware) and [The Console Living Room](https://archive.org/details/consolelivingroom), both collections of old video games and programs, both playable online in your browser
