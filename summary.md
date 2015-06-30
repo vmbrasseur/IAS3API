@@ -18,7 +18,7 @@ Internet Archive welcomes **all digital contributions** and will store, serve, a
 > Internet Archive is accepts all data. However, if the data is under current copyright the Archive reserves the right to remove it.
 
 **What file types can I upload to Internet Archive?**
-> Internet Archive accepts all digital files. Certain files will receive an online viewer (video, audio, text) if the item which contains them has the appropriate metadata values. Files which are not of the correct type to be receive an online viewer will still be saved and available for download on the Archive. Please see the [mediatype](./metadata.md#mediatype) metadata field for more information.
+> Internet Archive accepts all digital files. Certain files will receive an online viewer (video, audio, text) if the item which contains them has the appropriate metadata values. Files which are not of the correct type to receive an online viewer will still be saved and available for download on the Archive. Please see the [mediatype](./metadata.md#mediatype) metadata field for more information.
 
 **How much data can I upload to Internet Archive?**
 > How much do you have? There is no real limit. However, if you have a very large amount of data you wish to upload, please [contact the Archive](mailto:info@archive.org) and coordinate with them to be sure everything goes smoothly.
