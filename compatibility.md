@@ -10,7 +10,7 @@ For instance, adding the following to your `~/.s3cfg` configuration file for [s3
 
     [default]
 		access_key = YOUR-ACCESS-KEY		
-    secret_key = YOUR-SECRET-KEY
+    		secret_key = YOUR-SECRET-KEY
 		host_base = s3.us.archive.org
 		host_bucket = %(bucket)s.s3.us.archive.org
 
