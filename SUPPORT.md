@@ -6,6 +6,12 @@ For questions and problems _with this document_, please [file a Github issue](ht
 
 Every effort has been made to have this document as accurate as possible at the time of release. However, because the initial writing and research for this documentation occurred in 2011, it is possible (likely) there are errors in it. If any errors are located, it is the fault of the document author(s) and not of Internet Archive.
 
+Navigation:
+
+* [< Summary of API Functionality and FAQs](https://github.com/vmbrasseur/IAS3API/blob/master/summary.md)
+* [Table of Contents](https://github.com/vmbrasseur/IAS3API) 
+* [> Quick Start](https://github.com/vmbrasseur/IAS3API/blob/master/quickstart.md)
+
 -----
 
 _Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
