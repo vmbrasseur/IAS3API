@@ -8,6 +8,12 @@ Each file in an Internet Archive item can be retrieved via a `/download/` URL:
 
 This is the recommended method for programatically downloading files from Internet Archive.
 
+Navigation
+
+* [< Special Files](https://github.com/vmbrasseur/IAS3API/blob/master/specialfiles.md)
+* [Table of Contents](https://github.com/vmbrasseur/IAS3API)
+* [> Troubleshooting](https://github.com/vmbrasseur/IAS3API/blob/master/troubleshooting.md)
+
 -----
 
 _Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
