@@ -71,6 +71,12 @@ A new or modified `IDENTIFIER_rules.conf` file will not be recognized until a ne
 
 If now-excluded formats had previously been derived, initiating a derive process will remove the files from the item.
 
+Navigation
+
+* [< Setting Metadata Values via Files](https://github.com/vmbrasseur/IAS3API/blob/master/metadatafiles.md)
+* [Table of Contents](https://github.com/vmbrasseur/IAS3API)
+* [> A note on downloading](https://github.com/vmbrasseur/IAS3API/blob/master/downloading.md)
+
 -----
 
 _Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
