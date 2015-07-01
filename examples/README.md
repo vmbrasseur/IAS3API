@@ -18,3 +18,8 @@ The following are some examples of the IAS3 API in use in various programming la
 ### Other Languages
 
 Examples for other languages are still pending. If you have any you would like to provide, please send a pull request. We'd be thrilled to include it in this documentation.
+
+Navigation
+
+* [< Troubleshooting](https://github.com/vmbrasseur/IAS3API/blob/master/troubleshooting.md)
+* [Table of Contents](https://github.com/vmbrasseur/IAS3API)
