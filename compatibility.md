@@ -16,6 +16,12 @@ For instance, adding the following to your `~/.s3cfg` configuration file for [s3
 
 The `access_key` and `secret_key` are available on [your Internet Archive patron record](http://www.archive.org/account/s3.php).
 
+Navigation
+
+* [< System Requirements](https://github.com/vmbrasseur/IAS3API/blob/master/systemrequirements.md)
+* [Table of Contents](https://github.com/vmbrasseur/IAS3API)
+* [> Passing Authorization Credentials to IAS3](https://github.com/vmbrasseur/IAS3API/blob/master/authcredentials.md)
+
 -----
 
 _Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
