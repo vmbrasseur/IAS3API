@@ -36,7 +36,7 @@ Navigation:
 
 * [< Introduction](https://github.com/vmbrasseur/IAS3API/blob/master/introduction.md)
 * [Table of Contents](https://github.com/vmbrasseur/IAS3API) 
-* [> Summary of API Functionality and FAQs](https://github.com/vmbrasseur/IAS3API/blob/master/summary.md)
+* [> Getting Support for This Documentation](https://github.com/vmbrasseur/IAS3API/blob/master/SUPPORT.md)
 
 -----
 
