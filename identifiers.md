@@ -1,6 +1,6 @@
 ## Identifiers
 
-Each item at Internet Archive has a identifier. An identifier is composed of any unique combination of alphanumeric characters, underscore ( _ ) and dash ( - ). While there are no official limits it is strongly suggested that they be between 5 and 80 characters in length.
+Each item at Internet Archive has a identifier. An identifier is composed of any unique combination of alphanumeric characters, underscore ( _ ) and dash ( - ). While there are no official limits it is strongly suggested that identifiers be between 5 and 80 characters in length.
 
 Identifiers must be unique across the entirety of Internet Archive, not simply unique within a single collection.
 
