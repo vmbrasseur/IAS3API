@@ -32,6 +32,12 @@ Internet Archive welcomes **all digital contributions** and will store, serve, a
 **Can I organize the items I create on Internet Archive?**
 > Items can be organized within [collections](./metadata.md#collection). A collection is a specialized item used for curation and aggregation of other items. Currently collections can only be created by Internet Archive staff members. Please [contact Internet Archive](mailto:info@archive.org) if you need a collection created.
 
+Navigation:
+
+* [< Introduction](https://github.com/vmbrasseur/IAS3API/blob/master/introduction.md)
+* [Table of Contents](https://github.com/vmbrasseur/IAS3API) 
+* [> Summary of API Functionality and FAQs](https://github.com/vmbrasseur/IAS3API/blob/master/summary.md)
+
 -----
 
 _Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
