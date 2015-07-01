@@ -38,6 +38,12 @@ You may also reach this page by clicking the 'Item History' link on the item's d
 
 You may use either the [`IDENTIFIER_rules.conf`](./specialfiles.md) file or the [`x-archive-queue-derive`](./headers.md) header to control the creation of [derivative files](http://www.archive.org/help/derivatives.php) from your originals.
 
+Navigation
+
+* [< A note on downloading](https://github.com/vmbrasseur/IAS3API/blob/master/downloading.md)
+* [Table of Contents](https://github.com/vmbrasseur/IAS3API)
+* [> Code Examples](https://github.com/vmbrasseur/IAS3API/blob/master/examples/README.md)
+
 -----
 
 _Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
