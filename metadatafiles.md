@@ -31,6 +31,12 @@ The `IDENTIFIER_marc.xml` file is used to generate a `IDENTIFIER_dc.xml` file of
 
 The item's definitive metadata file, `IDENTIFIER_meta.xml` is generated from the `IDENTIFIER_dc.xml` Dublin Core file.
 
+Navigation
+
+* [< Metadata](https://github.com/vmbrasseur/IAS3API/blob/master/metadata.md)
+* [Table of Contents](https://github.com/vmbrasseur/IAS3API)
+* [> Special Files](https://github.com/vmbrasseur/IAS3API/blob/master/specialfiles.md)
+
 -----
 
 _Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
