@@ -220,6 +220,12 @@ Internet Archive strives to be metadata agnostic, enabling users to define the m
 
 This example will generate a metadata field named `isbn_10`.
 
+Navigation
+
+* [< Headers](https://github.com/vmbrasseur/IAS3API/blob/master/headers.md)
+* [Table of Contents](https://github.com/vmbrasseur/IAS3API)
+* [> Setting Metadata Values via Files](https://github.com/vmbrasseur/IAS3API/blob/master/metadatafiles.md)
+
 -----
 
 _Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
