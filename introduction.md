@@ -47,6 +47,11 @@ IAS3 differs from Amazon's S3 API in several significant ways:
 
 In addition, IAS3 also supports several of its own headers. These are discussed in more detail in the [Headers](./headers.md) section of this documentation.
 
+Navigation:
+
+* [< Table of Contents](https://github.com/vmbrasseur/IAS3API) 
+* [> Summary of API Functionality and FAQs](https://github.com/vmbrasseur/IAS3API/blob/master/summary.md)
+
 -----
 
 _Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
