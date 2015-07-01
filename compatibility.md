@@ -9,8 +9,8 @@ Some Amazon S3 clients obey configuration files, many of will will allow you to 
 For instance, adding the following to your `~/.s3cfg` configuration file for [s3cmd](http://s3tools.org/s3cmd), a popular Amazon S3 client, will allow you to connect to IAS3:
 
     [default]
-		access_key = YOUR-ACCESS-KEY		
-    		secret_key = YOUR-SECRET-KEY
+		access_key = YOUR-ACCESS-KEY	
+		secret_key = YOUR-SECRET-KEY
 		host_base = s3.us.archive.org
 		host_bucket = %(bucket)s.s3.us.archive.org
 
