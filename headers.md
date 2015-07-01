@@ -85,6 +85,12 @@ If this header is not defined IAS3 will attempt to default to the value in the `
 
 This header works only when PUTting to IAS3.
 
+Navigation
+
+* [< Anatomy of an IAS3 Request](https://github.com/vmbrasseur/IAS3API/blob/master/requestanatomy.md)
+* [Table of Contents](https://github.com/vmbrasseur/IAS3API)
+* [> Metadata](https://github.com/vmbrasseur/IAS3API/blob/master/metadata.md)
+
 -----
 
 _Like the API? Like [Internet Archive](http://archive.org)? Please consider supporting them with a [donation](http://archive.org/donate/)!_
