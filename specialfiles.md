@@ -2,7 +2,7 @@
 
 Each Internet Archive item is comprised of several files. Many of these files are automatically generated and **should not** be either removed or modified.
 
-### IDENTIFIER.meta.xml
+### IDENTIFIER_meta.xml
 
 `IDENTIFIER_meta.xml` is the definitive metadata file for the item. It is automatically generated at item creation time using the metadata provided either [via headers](./metadata.md) or [via files](./metadatafiles.md).
 
