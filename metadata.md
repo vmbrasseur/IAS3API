@@ -38,6 +38,16 @@ For example, if an item contains both PDF and mp3 files you may assign it to bot
     --header 'x-archive-meta01-collection:texts' 
     --header 'x-archive-meta02-collection:opensource_audio'
 
+### Unicode Metadata Values
+
+`x-archive-meta-*` headers are interpreted as having utf-8 character encoding, however some http clients do not allow the full range of utf-8 bytes to appear in http headers.
+As a work around, one can encode a utf-8 meta header with uri encoding.
+To do this write all the header data like so: `uri($payload_as_uri_encoded_utf8)`
+
+For example, to set the title of an item to include the unicode snowman include the following line in a curl command:
+
+    --header 'x-archive-meta-title:uri(This%20is%20a%20snowman%20%E2%98%83)'
+
 ### Standard Internet Archive Metadata Fields
 
 There are several standard metadata fields recognized for Internet Archive items. All metadata fields are optional.
