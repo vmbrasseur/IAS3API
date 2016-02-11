@@ -15,6 +15,10 @@ The following are some examples of the IAS3 API in use in various programming la
 
 * [Extract from a script for uploading multiple files to an item using LWP](./perl-upload_multiple_files_to_an_item.md)
 
+### Python
+
+* [The Internet Archive Python Library and command-line Tool](https://github.com/jjjake/internetarchive)
+
 ### Other Languages
 
 Examples for other languages are still pending. If you have any you would like to provide, please send a pull request. We'd be thrilled to include it in this documentation.
