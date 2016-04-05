@@ -13,5 +13,6 @@ This [curl](http://curl.haxx.se/) command can be run at the command line. It wil
         --header 'x-archive-meta-mediatype:texts' \
         --header 'x-archive-meta-title:Fancy new title' \
         --header "authorization: LOW $accesskey:$secret" \
-        --upload-file /dev/null \
+        --header 'Content-Length:0' \
+        --request PUT \
     http://s3.us.archive.org/sam-s3-test-08
