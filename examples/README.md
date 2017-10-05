@@ -19,6 +19,10 @@ The following are some examples of the IAS3 API in use in various programming la
 
 * [The Internet Archive Python Library and command-line Tool](https://github.com/jjjake/internetarchive)
 
+### Groovy
+
+* [e-gangotri uploader](https://github.com/eGangotri/eGangotri/blob/master/src/com/egangotri/upload/archive/UploadToArchive.groovy)
+
 ### Other Languages
 
 Examples for other languages are still pending. If you have any you would like to provide, please send a pull request. We'd be thrilled to include it in this documentation.
