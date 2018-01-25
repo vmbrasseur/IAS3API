@@ -49,7 +49,7 @@ This header only works when PUTting to IAS3.
 
 #### x-archive-keep-old-version
 
-Normal PUT operation will overwrite a file when it is used to upload a file of the same name. A normal DELETE operation will remove the specified file. The `x-archive-keep-old-version` header will rename the specified file, prepending the filename with `.~~` before proceding with the PUT or DELETE operation.
+Normal PUT operation will overwrite a file when it is used to upload a file of the same name. A normal DELETE operation will remove the specified file. The `x-archive-keep-old-version` header will rename the specified file, prepending the filename with `.~~` before proceeding with the PUT or DELETE operation.
 
 To enable this option, pass the `x-archive-keep-old-version` header with a value of `1`. 
 
